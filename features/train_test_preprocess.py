@@ -11,11 +11,13 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
+import cPickle
 import numpy as np
 import pandas as pd
 
 # my own module
 from conf.configure import Configure
+import data_utils
 
 
 def perform_missing_data(dataframe, columns, value):
@@ -110,8 +112,9 @@ def perform_state_features(train, test):
 
 def main():
     print 'loading train and test datas'
-    train = pd.read_csv(Configure.train_csv)
-    test = pd.read_csv(Configure.test_csv)
+    print("Load data...")
+    train, test = data_utils.load_data()
+
     print 'train:', train.shape, ', test:', test.shape
 
     print 'perform data cleaning and basic feature engineering'
@@ -126,4 +129,5 @@ def main():
 
 
 if __name__ == '__main__':
+    print "================== train test preprocess =================="
     main()

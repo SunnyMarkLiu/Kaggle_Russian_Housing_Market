@@ -10,5 +10,8 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
+cmd = 'python impute_missing_data.py'
+os.system(cmd)
+
 cmd = 'python train_test_preprocess.py'
 os.system(cmd)

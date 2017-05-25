@@ -12,7 +12,6 @@ module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
 import numpy as np
-import pandas as pd
 
 # remove warnings
 import warnings
@@ -20,7 +19,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # my own module
-from conf.configure import Configure
 import data_utils
 from impute_missing_data import simple_filling_missing_data
 
@@ -154,6 +152,8 @@ def main():
     train, test = perform_build_year_features(train, test)
     train, test = perform_num_room_features(train, test)
     print 'train:', train.shape, ', test:', test.shape
+    print("Save data...")
+    data_utils.save_data(train, test)
 
 
 if __name__ == '__main__':

@@ -11,32 +11,28 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
-import cPickle
 import numpy as np
 import pandas as pd
+
+# remove warnings
+import warnings
+
+warnings.filterwarnings('ignore')
 
 # my own module
 from conf.configure import Configure
 import data_utils
-# remove warnings
-import warnings
-warnings.filterwarnings('ignore')
-
-
-def perform_missing_data(dataframe, columns, value):
-    """ 填充缺失数据 """
-    for column in columns:
-        dataframe.loc[dataframe[column].isnull(), column] = value
+from impute_missing_data import simple_filling_missing_data
 
 
 def perform_area_features(train, test):
     """ 处理 area 相关字段 """
-    perform_missing_data(train, ['life_sq', 'full_sq', 'kitch_sq'], 0)
-    perform_missing_data(test, ['life_sq', 'full_sq', 'kitch_sq'], 0)
+    simple_filling_missing_data(train, ['life_sq', 'full_sq', 'kitch_sq'], 0)
+    simple_filling_missing_data(test, ['life_sq', 'full_sq', 'kitch_sq'], 0)
 
     # 去除 life_sq > full_sq 和 kitch_sq > full_sq 的异常数据
     train = train[train['kitch_sq'] <= train['full_sq']]
-    train = train[train['life_sq'] <= train['full_sq']]
+    # train = train[train['life_sq'] <= train['full_sq']]
 
     gap = 50
     # 去除训练集中出现的数据而测试集中没有出现的数据避免过拟合
@@ -65,22 +61,26 @@ def perform_area_features(train, test):
 
 def perform_floor_features(train, test):
     """ 处理 floor 相关字段 """
-    perform_missing_data(train, ['life_sq', 'full_sq', 'kitch_sq'], 0)
-    perform_missing_data(test, ['life_sq', 'full_sq', 'kitch_sq'], 0)
+    train['floor'] = train['floor'].map(lambda f: int(round(f)))
+    train['max_floor'] = train['max_floor'].map(lambda f: int(round(f)))
+    test['floor'] = test['floor'].map(lambda f: int(round(f)))
+    test['max_floor'] = test['max_floor'].map(lambda f: int(round(f)))
     return train, test
 
 
 def perform_material_features(train, test):
     """ 处理 floor 相关字段 """
-    perform_missing_data(train, ['material'], 0)
-    perform_missing_data(test, ['material'], 0)
+    simple_filling_missing_data(train, ['material'], 0)
+    simple_filling_missing_data(test, ['material'], 0)
+
+    train['material'] = train['material'].map(lambda f: int(f))
+    test['material'] = test['material'].map(lambda f: int(f))
+
     return train, test
 
 
 def perform_build_year_features(train, test):
     """ 处理 build_year 相关字段 """
-    perform_missing_data(train, ['build_year'], 0)
-    perform_missing_data(test, ['build_year'], 0)
     train['build_year'] = train['build_year'].map(lambda x: int(x))
     test['build_year'] = test['build_year'].map(lambda x: int(x))
     # 去除训练集中 build_year 异常的数据
@@ -90,11 +90,12 @@ def perform_build_year_features(train, test):
 
 def perform_num_room_features(train, test):
     """ 处理 num_room 相关字段 """
-    perform_missing_data(train, ['num_room'], -1)
-    perform_missing_data(test, ['num_room'], -1)
     # 对于 num_room 也视为缺失值
-    train.loc[train['num_room'] == 0, 'num_room'] = -1
-    test.loc[test['num_room'] == 0, 'num_room'] = -1
+    train.loc[train['num_room'] == 0, 'num_room'] = 2
+    test.loc[test['num_room'] == 0, 'num_room'] = 2
+
+    train['num_room'] = train['num_room'].map(lambda x: int(round(x)))
+    test['num_room'] = test['num_room'].map(lambda x: int(round(x)))
 
     # 添加每个 living rome 房间的面积
     train['per_living_room_sq'] = train['life_sq'] / train['num_room']
@@ -105,13 +106,20 @@ def perform_num_room_features(train, test):
 
 def perform_state_features(train, test):
     """ 处理 state 相关字段 """
-    perform_missing_data(train, ['state'], -1)
-    perform_missing_data(test, ['state'], -1)
+    simple_filling_missing_data(train, ['state'], -1)
+    simple_filling_missing_data(test, ['state'], -1)
     train['state'] = train['state'].map(lambda x: int(x))
     test['state'] = test['state'].map(lambda x: int(x))
-
     return train, test
 
+
+def perform_product_type_features(train, test):
+    """ 处理 state 相关字段 """
+    simple_filling_missing_data(train, ['product_type'], -1)
+    simple_filling_missing_data(test, ['product_type'], -1)
+    train['state'] = train['state'].map(lambda x: int(x))
+    test['state'] = test['state'].map(lambda x: int(x))
+    return train, test
 
 def main():
     print 'loading train and test datas'

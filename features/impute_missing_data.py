@@ -40,6 +40,14 @@ def simple_impute_data(train, test):
     simple_filling_missing_data(train, ['build_year'], 0)
     simple_filling_missing_data(test, ['build_year'], 0)
 
+    simple_filling_missing_data(train, ['state'], -1)
+    simple_filling_missing_data(test, ['state'], -1)
+
+    simple_filling_missing_data(train, ['material'], 0)
+    simple_filling_missing_data(test, ['material'], 0)
+
+    return train, test
+
 
 def kmeans_impute_data(train, test):
     print '合并训练集和测试集'
@@ -87,11 +95,11 @@ def kmeans_impute_data(train, test):
         missing_df = missing_df[missing_df.missing_count > 0]
         print '缺失数据属性 {}'.format(missing_df.shape[0])
 
-    print "缺失数值型数据填充完成"
     train = conbined_data.iloc[:train.shape[0], :]
     train['price_doc'] = train_price_doc
     test = conbined_data.iloc[train.shape[0]:, :]
-    print train.shape, test.shape
+
+    return train, test
 
 
 def impute_categories_data(train, test):
@@ -99,16 +107,32 @@ def impute_categories_data(train, test):
     impute_categories_missing_data(train, str_columns)
     impute_categories_missing_data(test, str_columns)
 
+    return train, test
+
+
+def contains_null(dataframe):
+    missing_df = dataframe.isnull().sum(axis=0).reset_index()
+    missing_df.columns = ['column_name', 'missing_count']
+    missing_df = missing_df[missing_df.missing_count > 0]
+    return missing_df.shape[0] > 0
+
 
 def main():
     print("Load data...")
     train, test = data_utils.load_data()
-    print("填充缺失数据...")
-    simple_impute_data(train, test)
-    kmeans_impute_data(train, test)
-    impute_categories_data(train, test)
-    print("Save data...")
-    data_utils.save_data(train, test)
+    print train.shape, test.shape
+
+    if contains_null(train) | contains_null(test):
+        print("填充缺失数据...")
+        train, test = simple_impute_data(train, test)
+        train, test = kmeans_impute_data(train, test)
+        train, test = impute_categories_data(train, test)
+        print("缺失数据填充完成")
+        print train.shape, test.shape
+        print("Save data...")
+        data_utils.save_data(train, test)
+    else:
+        print "没有缺失数据!"
 
 
 if __name__ == '__main__':

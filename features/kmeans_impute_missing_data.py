@@ -45,7 +45,6 @@ class KMeansImputeMissingData(object):
         kmeans_labels = None
         centroids = None
         for i in xrange(self.max_iter):
-            print 'perform iter:', i
             if i > 0:
                 # initialize KMeans with the previous set of centroids. this is much
                 # faster and makes it easier to check convergence (since labels
@@ -67,7 +66,6 @@ class KMeansImputeMissingData(object):
 
             # when the labels have stopped changing then we have converged
             if i > 0 and np.all([kmeans_labels == prev_labels]):
-                print 'cluster converged!'
                 break
 
             prev_labels = kmeans_labels

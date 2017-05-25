@@ -122,10 +122,8 @@ def perform_product_type_features(train, test):
     return train, test
 
 def main():
-    print 'loading train and test datas'
-    print("Load data...")
+    print 'loading train and test datas...'
     train, test = data_utils.load_data()
-
     print 'train:', train.shape, ', test:', test.shape
 
     print 'perform data cleaning and basic feature engineering'

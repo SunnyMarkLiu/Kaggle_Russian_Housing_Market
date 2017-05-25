@@ -121,6 +121,25 @@ def perform_product_type_features(train, test):
     test['state'] = test['state'].map(lambda x: int(x))
     return train, test
 
+
+def perform_round_int_features(train, test):
+    """由于 kmeans 聚类求平均后有些属性变为float，需要将其round到int数值"""
+    rounds_columns = ['raion_build_count_with_material_info', 'build_count_block',
+                      'build_count_wood', 'build_count_frame', 'build_count_brick',
+                      'build_count_monolith', 'build_count_panel', 'build_count_foam',
+                      'build_count_slag', 'build_count_mix', 'build_count_before_1920',
+                      'raion_build_count_with_builddate_info', 'build_count_1921-1945',
+                      'build_count_1946-1970', 'build_count_1971-1995', 'build_count_after_1995',
+                      'ID_railroad_station_walk', 'ID_railroad_station_avto', 'ID_big_road1',
+                      'ID_big_road2']
+
+    for column in rounds_columns:
+        train[column] = train[column].map(lambda x: int(round(x)))
+        test[column] = test[column].map(lambda x: int(round(x)))
+
+    return train, test
+
+
 def main():
     print 'loading train and test datas...'
     train, test = data_utils.load_data()

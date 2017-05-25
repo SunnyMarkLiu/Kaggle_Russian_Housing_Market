@@ -15,7 +15,7 @@ class Configure(object):
     original_test_path = '../data/test.csv'
     original_macro_path = '../data/macro.csv'
 
-    submission = '../result/submission_{}.csv'.format(time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time())))
+    submission_path = '../result/submission_{}.csv'.format(time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time())))
 
     processed_train_path = '../data/processed_train_data.pkl'
     processed_test_path = '../data/processed_test_data.pkl'

@@ -140,7 +140,7 @@ def perform_round_int_features(train, test):
 
 def main():
     print 'loading train and test datas...'
-    train, test = data_utils.load_data()
+    train, test, _ = data_utils.load_data()
     print 'train:', train.shape, ', test:', test.shape
 
     print 'perform data cleaning and basic feature engineering'
@@ -153,7 +153,7 @@ def main():
     train, test = perform_num_room_features(train, test)
     print 'train:', train.shape, ', test:', test.shape
     print("Save data...")
-    data_utils.save_data(train, test)
+    data_utils.save_data(train, test, _)
 
 
 if __name__ == '__main__':

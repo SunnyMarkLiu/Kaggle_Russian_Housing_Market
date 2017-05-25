@@ -11,13 +11,14 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
-import cPickle
 import pandas as pd
 
 # my own module
 import data_utils
 from kmeans_impute_missing_data import KMeansImputeMissingData
-from conf.configure import Configure
+# remove warnings
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def main():

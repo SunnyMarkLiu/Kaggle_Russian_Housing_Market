@@ -18,6 +18,9 @@ import pandas as pd
 # my own module
 from conf.configure import Configure
 import data_utils
+# remove warnings
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def perform_missing_data(dataframe, columns, value):

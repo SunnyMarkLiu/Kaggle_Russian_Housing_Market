@@ -150,7 +150,7 @@ def impute_macro_data(macro):
 
 def main():
     print("Load data...")
-    train, test, macro = data_utils.load_data()
+    train, test, macro = data_utils.load_for_impute_data()
     print train.shape, test.shape, macro.shape
 
     if contains_null(train) | contains_null(test) | contains_null(macro):

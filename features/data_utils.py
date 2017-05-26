@@ -18,6 +18,28 @@ import pandas as pd
 from conf.configure import Configure
 
 
+def load_for_impute_data():
+    """加载数据"""
+    if not os.path.exists(Configure.original_imputed_train_path):
+        train = pd.read_csv(Configure.original_train_path)
+    else:
+        with open(Configure.original_imputed_train_path, "rb") as f:
+            train = cPickle.load(f)
+
+    if not os.path.exists(Configure.original_imputed_test_path):
+        test = pd.read_csv(Configure.original_test_path)
+    else:
+        with open(Configure.original_imputed_test_path, "rb") as f:
+            test = cPickle.load(f)
+
+    if not os.path.exists(Configure.original_imputed_macro_path):
+        macro = pd.read_csv(Configure.original_macro_path)
+    else:
+        with open(Configure.original_imputed_macro_path, "rb") as f:
+            macro = cPickle.load(f)
+
+    return train, test, macro
+
 def load_data():
     """加载数据"""
     if not os.path.exists(Configure.processed_train_path):

@@ -45,7 +45,7 @@ def gen_school_features(conbined_data):
     # 学前教育机构的座位数所缺失数目
     conbined_data['children_preschool_preschool_quota_gap'] = \
         conbined_data['children_preschool'] - conbined_data['preschool_quota']
-    # 学前教育机构座位缺失比例 0.46038
+    # 学前教育机构座位缺失比例 0.46005
     conbined_data['children_preschool_preschool_quota_gap_ratio'] = \
         (conbined_data['children_preschool'] - conbined_data['preschool_quota']) / conbined_data['children_preschool'].astype(float)
 

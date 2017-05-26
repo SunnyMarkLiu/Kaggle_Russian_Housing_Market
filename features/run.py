@@ -15,3 +15,6 @@ os.system(cmd)
 
 cmd = 'python train_test_preprocess.py'
 os.system(cmd)
+
+cmd = 'python generate_neighbourhood_features.py'
+os.system(cmd)

@@ -54,3 +54,32 @@ def save_data(train, test, macro):
     if macro is not None:
         with open(Configure.processed_macro_path, "wb") as f:
             cPickle.dump(macro, f, -1)
+
+
+def load_imputed_data():
+    """加载填充缺失的数据"""
+    with open(Configure.original_imputed_train_path, "rb") as f:
+        train = cPickle.load(f)
+
+    with open(Configure.original_imputed_test_path, "rb") as f:
+        test = cPickle.load(f)
+
+    with open(Configure.original_imputed_macro_path, "rb") as f:
+        macro = cPickle.load(f)
+
+    return train, test, macro
+
+
+def save_imputed_data(train, test, macro):
+    """保存数据"""
+    if train is not None:
+        with open(Configure.original_imputed_train_path, "wb") as f:
+            cPickle.dump(train, f, -1)
+
+    if test is not None:
+        with open(Configure.original_imputed_test_path, "wb") as f:
+            cPickle.dump(test, f, -1)
+
+    if macro is not None:
+        with open(Configure.original_imputed_macro_path, "wb") as f:
+            cPickle.dump(macro, f, -1)

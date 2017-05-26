@@ -140,7 +140,7 @@ def perform_round_int_features(train, test):
 
 def main():
     print 'loading train and test datas...'
-    train, test, _ = data_utils.load_data()
+    train, test, _ = data_utils.load_imputed_data()
     print 'train:', train.shape, ', test:', test.shape
 
     print 'perform data cleaning and basic feature engineering'

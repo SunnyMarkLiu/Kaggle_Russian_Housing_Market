@@ -163,7 +163,7 @@ def main():
         print("缺失数据填充完成")
         print("Save data...")
         print train.shape, test.shape, macro.shape
-        data_utils.save_data(train, test, macro)
+        data_utils.save_imputed_data(train, test, macro)
     else:
         print "没有缺失数据!"
 

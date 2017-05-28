@@ -18,3 +18,6 @@ os.system(cmd)
 
 cmd = 'python generate_neighbourhood_features.py'
 os.system(cmd)
+
+cmd = 'python ratio_dispersed_features.py'
+os.system(cmd)

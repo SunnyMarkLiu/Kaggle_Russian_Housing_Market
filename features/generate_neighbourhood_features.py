@@ -97,7 +97,7 @@ def generate_population_features(conbined_data):
 
     # 小于工作年龄的人口比例（模型过拟合）
     # conbined_data['young_underwork_vs_full_all_ratio'] = conbined_data['young_all'] / conbined_data['full_all'].astype(float)
-    # 小于工龄的男性人口比例（模型过拟合）
+    # 小于工龄的男性人口比例
     conbined_data['young_male_vs_underwork_ratio'] = conbined_data['young_male'] / conbined_data['young_all'].astype(float)
     # 小于工龄的女性人口比例（模型过拟合）
     # conbined_data['young_female_vs_underwork_ratio'] = conbined_data['young_female'] / conbined_data['young_all'].astype(float)
@@ -110,7 +110,7 @@ def generate_population_features(conbined_data):
 
     # 劳动年龄人口比例（模型过拟合）
     # conbined_data['work_all_vs_full_all_ratio'] = conbined_data['work_all'] / conbined_data['full_all'].astype(float)
-    # 劳动年龄男性人口比例（模型过拟合）
+    # 劳动年龄男性人口比例
     conbined_data['work_male_vs_work_all_ratio'] = conbined_data['work_male'] / conbined_data['work_all'].astype(float)
     # # 劳动年龄女性人口比例（模型过拟合）
     # conbined_data['work_female_vs_work_all_ratio'] = conbined_data['work_female'] / conbined_data['work_all'].astype(float)
@@ -123,7 +123,7 @@ def generate_population_features(conbined_data):
 
     # 年龄大于工作年龄的人口比例（模型过拟合）
     # conbined_data['ekder_all_vs_full_all_ratio'] = conbined_data['ekder_all'] / conbined_data['full_all'].astype(float)
-    # 年龄大于工作年龄的人口男性人口比例（模型过拟合）
+    # 年龄大于工作年龄的人口男性人口比例
     conbined_data['ekder_male_vs_ekder_all_ratio'] = conbined_data['ekder_male'] / conbined_data['ekder_all'].astype(float)
     # # 年龄大于工作年龄的人口女性人口比例（模型过拟合）
     # conbined_data['ekder_female_vs_ekder_all_ratio'] = conbined_data['ekder_female'] / conbined_data['ekder_all'].astype(float)
@@ -133,6 +133,84 @@ def generate_population_features(conbined_data):
 
     # # 女性中年龄大于工作年龄的比例（模型过拟合）
     # conbined_data['ekder_female_vs_femalef_ratio'] = conbined_data['ekder_female'] / conbined_data['female_f'].astype(float)
+
+    return conbined_data
+
+
+def generate_population_age_features(conbined_data):
+    """生成人口年龄分布的相关特征"""
+    # 0-6岁人口比例
+    conbined_data['0_6_all_age_ratio'] = conbined_data['full_all'] / conbined_data['full_all'].astype(float)
+    # 7-14岁人口比例
+    conbined_data['7_14_all_age_ratio'] = conbined_data['7_14_all'] / conbined_data['full_all'].astype(float)
+    # 0-17岁人口比例
+    conbined_data['0_17_all_age_ratio'] = conbined_data['0_17_all'] / conbined_data['full_all'].astype(float)
+    # 16-29岁人口比例
+    conbined_data['16_29_all_age_ratio'] = conbined_data['16_29_all'] / conbined_data['full_all'].astype(float)
+    # 0-13岁人口比例
+    conbined_data['0_13_all_age_ratio'] = conbined_data['0_13_all'] / conbined_data['full_all'].astype(float)
+
+    """可能会反映教育压力"""
+    # 0-6岁人口到 children_preschool 学前教育人口的比例
+    conbined_data['0_6_all_vs_children_preschool'] = conbined_data['0_6_all'] / conbined_data['children_preschool'].astype(float)
+    # 0-6岁人口占学前教育机构座位数的比例
+    conbined_data['0_6_all_vs_preschool_quota'] = conbined_data['0_6_all'] / conbined_data['preschool_quota'].astype(float)
+    # 7-14岁人口占children_school学龄人口的比例
+    conbined_data['7_14_all_vs_children_school'] = conbined_data['7_14_all'] / conbined_data['children_school'].astype(float)
+    # 7-14岁人口占教育机构座位数的比例
+    conbined_data['7_14_all_vs_school_quota'] = conbined_data['7_14_all'] / conbined_data['school_quota'].astype(float)
+
+    return conbined_data
+
+
+def generate_build_features(conbined_data):
+    """构造建筑相关的特征"""
+    # 建筑建造材料信息
+    # block buildings 比例
+    conbined_data['build_block_ratio'] = \
+        conbined_data['build_count_block'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # wood buildings 比例
+    conbined_data['build_wood_ratio'] = \
+        conbined_data['build_count_wood'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # frame buildings 比例
+    conbined_data['build_frame_ratio'] = \
+        conbined_data['build_count_frame'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # brick buildings 比例
+    conbined_data['build_brick_ratio'] = \
+        conbined_data['build_count_brick'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # monolith buildings 比例
+    conbined_data['build_monolith_ratio'] = \
+        conbined_data['build_count_monolith'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # panel buildings 比例
+    conbined_data['build_panel_ratio'] = \
+        conbined_data['build_count_panel'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # foam buildings 比例
+    conbined_data['build_foam_ratio'] = \
+        conbined_data['build_count_foam'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # slag buildings 比例
+    conbined_data['build_slag_ratio'] = \
+        conbined_data['build_count_slag'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # mix buildings 比例
+    conbined_data['build_mix_ratio'] = \
+        conbined_data['build_count_mix'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+
+
+    # 建筑建造年代信息
+    # 1920 年之前建造的比例
+    conbined_data['build_count_before_1920_ratio'] = \
+        conbined_data['build_count_before_1920'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # 1921-1945 建造的比例
+    conbined_data['build_count_1921-1945_ratio'] = \
+        conbined_data['build_count_1921-1945'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # 1946-1970 建造的比例
+    conbined_data['build_count_1946-1970_ratio'] = \
+        conbined_data['build_count_1946-1970'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # 1971-1995 建造的比例
+    conbined_data['build_count_1971-1995_ratio'] = \
+        conbined_data['build_count_1971-1995'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    # 1995 年以后建造的比例
+    conbined_data['build_count_after_1995_ratio'] = \
+        conbined_data['build_count_after_1995'] / conbined_data['raion_build_count_with_material_info'].astype(float)
 
     return conbined_data
 
@@ -155,6 +233,8 @@ def main():
     conbined_data = gen_school_features(conbined_data)
     conbined_data = generate_hospital_features(conbined_data)
     conbined_data = generate_population_features(conbined_data)
+    conbined_data = generate_population_age_features(conbined_data)
+    conbined_data = generate_build_features(conbined_data)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

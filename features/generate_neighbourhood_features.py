@@ -98,7 +98,8 @@ def generate_population_features(conbined_data):
     # 小于工作年龄的人口比例（模型过拟合）
     # conbined_data['young_underwork_vs_full_all_ratio'] = conbined_data['young_all'] / conbined_data['full_all'].astype(float)
     # 小于工龄的男性人口比例
-    conbined_data['young_male_vs_underwork_ratio'] = conbined_data['young_male'] / conbined_data['young_all'].astype(float)
+    conbined_data['young_male_vs_underwork_ratio'] = conbined_data['young_male'] / conbined_data['young_all'].astype(
+        float)
     # 小于工龄的女性人口比例（模型过拟合）
     # conbined_data['young_female_vs_underwork_ratio'] = conbined_data['young_female'] / conbined_data['young_all'].astype(float)
     # # 男性中小于工龄的人口比例（模型过拟合）
@@ -124,7 +125,8 @@ def generate_population_features(conbined_data):
     # 年龄大于工作年龄的人口比例（模型过拟合）
     # conbined_data['ekder_all_vs_full_all_ratio'] = conbined_data['ekder_all'] / conbined_data['full_all'].astype(float)
     # 年龄大于工作年龄的人口男性人口比例
-    conbined_data['ekder_male_vs_ekder_all_ratio'] = conbined_data['ekder_male'] / conbined_data['ekder_all'].astype(float)
+    conbined_data['ekder_male_vs_ekder_all_ratio'] = conbined_data['ekder_male'] / conbined_data['ekder_all'].astype(
+        float)
     # # 年龄大于工作年龄的人口女性人口比例（模型过拟合）
     # conbined_data['ekder_female_vs_ekder_all_ratio'] = conbined_data['ekder_female'] / conbined_data['ekder_all'].astype(float)
     # # 男性中年龄大于工作年龄的比例（模型过拟合）
@@ -140,24 +142,31 @@ def generate_population_features(conbined_data):
 def generate_population_age_features(conbined_data):
     """生成人口年龄分布的相关特征"""
     # 0-6岁人口比例 0.46068
-    # conbined_data['0_6_all_age_ratio'] = conbined_data['full_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['0_6_all_age_ratio'] = conbined_data['0_6_all'] / conbined_data['full_all'].astype(float)
     # 7-14岁人口比例 0.460679
-    # conbined_data['7_14_all_age_ratio'] = conbined_data['7_14_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['7_14_all_age_ratio'] = conbined_data['7_14_all'] / conbined_data['full_all'].astype(float)
     # 0-17岁人口比例 0.460621
-    # conbined_data['0_17_all_age_ratio'] = conbined_data['0_17_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['0_17_all_age_ratio'] = conbined_data['0_17_all'] / conbined_data['full_all'].astype(float)
     # 16-29岁人口比例 0.460626
-    # conbined_data['16_29_all_age_ratio'] = conbined_data['16_29_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['16_29_all_age_ratio'] = conbined_data['16_29_all'] / conbined_data['full_all'].astype(float)
     # 0-13岁人口比例 0.460666
-    # conbined_data['0_13_all_age_ratio'] = conbined_data['0_13_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['0_13_all_age_ratio'] = conbined_data['0_13_all'] / conbined_data['full_all'].astype(float)
 
-    """可能会反映教育压力"""
-    # 0-6岁人口到 children_preschool 学前教育人口的比例 0.46068
+    del conbined_data['0_13_all']
+    del conbined_data['16_29_all']
+    del conbined_data['0_17_all']
+    del conbined_data['7_14_all']
+    del conbined_data['0_6_all']
+    del conbined_data['full_all']
+
+    # """可能会反映教育压力"""
+    # # 0-6岁人口到 children_preschool 学前教育人口的比例 0.46068
     # conbined_data['0_6_all_vs_children_preschool'] = conbined_data['0_6_all'] / conbined_data['children_preschool'].astype(float)
-    # 0-6岁人口占学前教育机构座位数的比例 0.46065
+    # # 0-6岁人口占学前教育机构座位数的比例 0.46065
     # conbined_data['0_6_all_vs_preschool_quota'] = conbined_data['0_6_all'] / conbined_data['preschool_quota'].astype(float)
-    # 7-14岁人口占children_school学龄人口的比例 0.46068
+    # # 7-14岁人口占children_school学龄人口的比例 0.46068
     # conbined_data['7_14_all_vs_children_school'] = conbined_data['7_14_all'] / conbined_data['children_school'].astype(float)
-    # 7-14岁人口占教育机构座位数的比例 0.46055
+    # # 7-14岁人口占教育机构座位数的比例 0.46055
     # conbined_data['7_14_all_vs_school_quota'] = conbined_data['7_14_all'] / conbined_data['school_quota'].astype(float)
 
     return conbined_data
@@ -212,6 +221,7 @@ def generate_build_features(conbined_data):
     #     conbined_data['build_count_after_1995'] / conbined_data['raion_build_count_with_material_info'].astype(float)
 
     return conbined_data
+
 
 def main():
     print 'loading train and test datas...'

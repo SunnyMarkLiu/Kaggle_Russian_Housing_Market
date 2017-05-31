@@ -25,5 +25,5 @@ os.system(cmd)
 cmd = 'python ratio_dispersed_features.py'
 os.system(cmd)
 
-cmd = 'python ../model/simple_model_for_choose_features.py'
+cmd = 'python ../model/xgboost_navie_features.py'
 os.system(cmd)

@@ -37,12 +37,23 @@ def main():
     conbined_data = pd.concat([train[test.columns.values], test])
     conbined_data.columns = test.columns.values
 
-    str_columns = conbined_data.select_dtypes(include=['object']).columns.values.tolist()
+    print "conbined_data:", conbined_data.shape
+
+    # str_columns = conbined_data.select_dtypes(include=['object']).columns.values.tolist()
+
+    # Deal with categorical values
+    df_numeric = conbined_data.select_dtypes(exclude=['object'])
+    df_obj = conbined_data.select_dtypes(include=['object']).copy()
+
+    for c in df_obj:
+        df_obj[c] = pd.factorize(df_obj[c])[0]
+
+    conbined_data = pd.concat([df_numeric, df_obj], axis=1)
 
     # dummy code
-    dummies_data = pd.get_dummies(conbined_data[str_columns])
-    conbined_data[dummies_data.columns] = dummies_data[dummies_data.columns]
-    conbined_data.drop(str_columns, axis=1, inplace=True)
+    # dummies_data = pd.get_dummies(conbined_data[str_columns])
+    # conbined_data[dummies_data.columns] = dummies_data[dummies_data.columns]
+    # conbined_data.drop(str_columns, axis=1, inplace=True)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
@@ -97,13 +108,14 @@ def main():
     plst += [('eval_metric', 'rmse')]
     evallist = [(dval, 'eval'), (dtrain, 'train')]
 
-    learning_rates_list = [0.1] * 200 + [0.05] * 200 + [0.02] * 200 + [0.005] * 200 + [0.001] * 200
+    learning_rates_list = [0.1] * 100 + [0.01] * 100 + [0.005] * 200 + [0.001] * 300 + [0.0001] * 300
 
     bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=20, verbose_eval=10,
                     learning_rates=learning_rates_list)
 
-    num_boost_round = bst.best_iteration + 1
+    num_boost_round = bst.best_iteration
     print 'best_iteration: ', num_boost_round
+    learning_rates_list = [0.1] * 100 + [0.01] * 100 + [0.005] * 200 + [0.001] * 300 + [0.0001] * (num_boost_round - 700)
     model = xgb.train(dict(xgb_params, silent=0), dtrain_all, num_boost_round=num_boost_round,
                       learning_rates=learning_rates_list)
 

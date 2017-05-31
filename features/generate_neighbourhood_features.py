@@ -174,7 +174,7 @@ def generate_population_age_features(conbined_data):
 
 def generate_build_features(conbined_data):
     """构造建筑相关的特征"""
-    # 建筑建造材料信息 0.461145
+    # # 建筑建造材料信息 0.460455
     # # block buildings 比例
     # conbined_data['build_block_ratio'] = \
     #     conbined_data['build_count_block'] / conbined_data['raion_build_count_with_material_info'].astype(float)
@@ -202,8 +202,18 @@ def generate_build_features(conbined_data):
     # # mix buildings 比例
     # conbined_data['build_mix_ratio'] = \
     #     conbined_data['build_count_mix'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    #
+    # del conbined_data['build_count_block']
+    # del conbined_data['build_count_wood']
+    # del conbined_data['build_count_frame']
+    # del conbined_data['build_count_brick']
+    # del conbined_data['build_count_monolith']
+    # del conbined_data['build_count_panel']
+    # del conbined_data['build_count_foam']
+    # del conbined_data['build_count_slag']
+    # del conbined_data['build_count_mix']
 
-    # 建筑建造年代信息 0.460841
+    # # 建筑建造年代信息 0.460343
     # # 1920 年之前建造的比例
     # conbined_data['build_count_before_1920_ratio'] = \
     #     conbined_data['build_count_before_1920'] / conbined_data['raion_build_count_with_material_info'].astype(float)
@@ -219,6 +229,12 @@ def generate_build_features(conbined_data):
     # # 1995 年以后建造的比例
     # conbined_data['build_count_after_1995_ratio'] = \
     #     conbined_data['build_count_after_1995'] / conbined_data['raion_build_count_with_material_info'].astype(float)
+    #
+    # del conbined_data['build_count_after_1995']
+    # del conbined_data['build_count_1971-1995']
+    # del conbined_data['build_count_1946-1970']
+    # del conbined_data['build_count_1921-1945']
+    # del conbined_data['build_count_before_1920']
 
     return conbined_data
 

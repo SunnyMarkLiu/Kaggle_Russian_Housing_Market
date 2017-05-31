@@ -23,22 +23,20 @@ def load_for_impute_data():
     if not os.path.exists(Configure.original_imputed_train_path):
         train = pd.read_csv(Configure.original_train_path)
     else:
-        with open(Configure.original_imputed_train_path, "rb") as f:
-            train = cPickle.load(f)
+        train = pd.read_csv(Configure.original_imputed_train_path)
 
     if not os.path.exists(Configure.original_imputed_test_path):
         test = pd.read_csv(Configure.original_test_path)
     else:
-        with open(Configure.original_imputed_test_path, "rb") as f:
-            test = cPickle.load(f)
+        test = pd.read_csv(Configure.original_imputed_test_path)
 
     if not os.path.exists(Configure.original_imputed_macro_path):
         macro = pd.read_csv(Configure.original_macro_path)
     else:
-        with open(Configure.original_imputed_macro_path, "rb") as f:
-            macro = cPickle.load(f)
+        macro = pd.read_csv(Configure.original_imputed_macro_path)
 
     return train, test, macro
+
 
 def load_data():
     """加载数据"""
@@ -80,14 +78,9 @@ def save_data(train, test, macro):
 
 def load_imputed_data():
     """加载填充缺失的数据"""
-    with open(Configure.original_imputed_train_path, "rb") as f:
-        train = cPickle.load(f)
-
-    with open(Configure.original_imputed_test_path, "rb") as f:
-        test = cPickle.load(f)
-
-    with open(Configure.original_imputed_macro_path, "rb") as f:
-        macro = cPickle.load(f)
+    train = pd.read_csv(Configure.original_imputed_train_path, parse_dates=['timestamp'])
+    test = pd.read_csv(Configure.original_imputed_test_path, parse_dates=['timestamp'])
+    macro = pd.read_csv(Configure.original_imputed_macro_path, parse_dates=['timestamp'])
 
     return train, test, macro
 

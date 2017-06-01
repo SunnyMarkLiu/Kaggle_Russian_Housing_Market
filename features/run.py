@@ -25,5 +25,8 @@ os.system(cmd)
 cmd = 'python ratio_dispersed_features.py'
 os.system(cmd)
 
+# cmd = 'python generate_statistic_features.py'
+# os.system(cmd)
+
 cmd = 'python ../model/xgboost_navie_features.py'
 os.system(cmd)

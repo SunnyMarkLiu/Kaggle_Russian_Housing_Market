@@ -139,7 +139,6 @@ def perform_round_int_features(train, test):
 
 
 def perform_timestamp_features(conbined_data):
-    """添加时间特征后线下线上分数都降低了"""
     # # Add month-year
     # month_year = (conbined_data.timestamp.dt.month + conbined_data.timestamp.dt.year * 100)
     # month_year_cnt_map = month_year.value_counts().to_dict()

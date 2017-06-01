@@ -88,13 +88,10 @@ def load_imputed_data():
 def save_imputed_data(train, test, macro):
     """保存数据"""
     if train is not None:
-        with open(Configure.original_imputed_train_path, "wb") as f:
-            cPickle.dump(train, f, -1)
+        train.to_csv(Configure.original_imputed_train_path, index=False)
 
     if test is not None:
-        with open(Configure.original_imputed_test_path, "wb") as f:
-            cPickle.dump(test, f, -1)
+        test.to_csv(Configure.original_imputed_test_path, index=False)
 
     if macro is not None:
-        with open(Configure.original_imputed_macro_path, "wb") as f:
-            cPickle.dump(macro, f, -1)
+        macro.to_csv(Configure.original_imputed_macro_path, index=False)

@@ -108,15 +108,16 @@ def perform_state_features(train, test):
     simple_filling_missing_data(test, ['state'], -1)
     train['state'] = train['state'].map(lambda x: int(x))
     test['state'] = test['state'].map(lambda x: int(x))
+
+    train['state'][train['state'] == 33] = 3
+
     return train, test
 
 
 def perform_product_type_features(train, test):
     """ 处理 state 相关字段 """
-    simple_filling_missing_data(train, ['product_type'], -1)
-    simple_filling_missing_data(test, ['product_type'], -1)
-    train['state'] = train['state'].map(lambda x: int(x))
-    test['state'] = test['state'].map(lambda x: int(x))
+    simple_filling_missing_data(train, ['product_type'], 'Investment')
+    simple_filling_missing_data(test, ['product_type'], 'Investment')
     return train, test
 
 
@@ -169,9 +170,12 @@ def main():
 
     train, test = perform_area_features(train, test)
     train, test = perform_floor_features(train, test)
+    train, test = perform_state_features(train, test)
     train, test = perform_material_features(train, test)
     train, test = perform_build_year_features(train, test)
     train, test = perform_num_room_features(train, test)
+    train, test = perform_product_type_features(train, test)
+    train, test = perform_round_int_features(train, test)
 
     train_id = train['id']
     train_price_doc = train['price_doc']

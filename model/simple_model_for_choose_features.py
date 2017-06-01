@@ -33,9 +33,6 @@ def main():
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
 
-    # Remove timestamp column (may overfit the model in train)
-    conbined_data.drop(['timestamp'], axis=1, inplace=True)
-
     conbined_data.columns = test.columns.values
 
     str_columns = conbined_data.select_dtypes(include=['object']).columns.values.tolist()
@@ -95,7 +92,7 @@ def main():
     # param['eval_metric'] = "auc"
     plst = xgb_params.items()
     plst += [('eval_metric', 'rmse')]
-    evallist = [(dtrain, 'train'), (dval, 'eval')]
+    evallist = [(dval, 'eval')]
 
     bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=20, verbose_eval=10)
 

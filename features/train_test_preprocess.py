@@ -8,6 +8,8 @@
 import os
 import sys
 
+import pandas as pd
+
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
@@ -25,9 +27,6 @@ from impute_missing_data import simple_filling_missing_data
 
 def perform_area_features(train, test):
     """ 处理 area 相关字段 """
-    simple_filling_missing_data(train, ['life_sq', 'full_sq', 'kitch_sq'], 0)
-    simple_filling_missing_data(test, ['life_sq', 'full_sq', 'kitch_sq'], 0)
-
     # 去除 life_sq > full_sq 和 kitch_sq > full_sq 的异常数据
     train = train[train['kitch_sq'] <= train['full_sq']]
     # train = train[train['life_sq'] <= train['full_sq']]
@@ -37,18 +36,16 @@ def perform_area_features(train, test):
     train = train[train['full_sq'] <= test['full_sq'].max() + gap]
     train = train[train['life_sq'] <= test['life_sq'].max() + gap]
 
-    # 居住面积比例
-    train['life_sq_ratio'] = train['life_sq'] / (train['full_sq'] + 1)
     # 添加面积比例
-    train['life_sq_ratio'] = train['life_sq'] / (train['full_sq'] + 1)
-    train['kitch_sq_ratio'] = train['kitch_sq'] / (train['full_sq'] + 1)
-    train['kitch_sq_vs_life_ratio'] = train['kitch_sq'] / (train['life_sq'] + 1)
+    # train['life_sq_ratio'] = train['life_sq'] / (train['full_sq'] + 1)
+    # train['kitch_sq_ratio'] = train['kitch_sq'] / (train['full_sq'] + 1)
+    # train['kitch_sq_vs_life_ratio'] = train['kitch_sq'] / (train['life_sq'] + 1)
+    #
+    # test['life_sq_ratio'] = test['life_sq'] / (test['full_sq'] + 1)
+    # test['kitch_sq_ratio'] = test['kitch_sq'] / (test['full_sq'] + 1)
+    # test['kitch_sq_vs_life_ratio'] = test['kitch_sq'] / (test['life_sq'] + 1)
 
-    test['life_sq_ratio'] = test['life_sq'] / (test['full_sq'] + 1)
-    test['kitch_sq_ratio'] = test['kitch_sq'] / (test['full_sq'] + 1)
-    test['kitch_sq_vs_life_ratio'] = test['kitch_sq'] / (test['life_sq'] + 1)
-
-    # perform log1p
+    # perform log1p (有用)
     train['full_sq'] = np.log1p(train['full_sq'])
     test['full_sq'] = np.log1p(test['full_sq'])
     train['life_sq'] = np.log1p(train['life_sq'])
@@ -63,6 +60,9 @@ def perform_floor_features(train, test):
     train['max_floor'] = train['max_floor'].map(lambda f: int(round(f)))
     test['floor'] = test['floor'].map(lambda f: int(round(f)))
     test['max_floor'] = test['max_floor'].map(lambda f: int(round(f)))
+
+    train['rel_floor'] = train['floor'] / train['max_floor'].astype(float)
+    test['rel_floor'] = test['floor'] / test['max_floor'].astype(float)
     return train, test
 
 
@@ -96,8 +96,8 @@ def perform_num_room_features(train, test):
     test['num_room'] = test['num_room'].map(lambda x: int(round(x)))
 
     # 添加每个 living rome 房间的面积
-    train['per_living_room_sq'] = train['life_sq'] / train['num_room']
-    test['per_living_room_sq'] = test['life_sq'] / test['num_room']
+    # train['per_living_room_sq'] = train['life_sq'] / train['num_room']
+    # test['per_living_room_sq'] = test['life_sq'] / test['num_room']
 
     return train, test
 
@@ -138,6 +138,27 @@ def perform_round_int_features(train, test):
     return train, test
 
 
+def perform_timestamp_features(conbined_data):
+    # # Add month-year
+    # month_year = (conbined_data.timestamp.dt.month + conbined_data.timestamp.dt.year * 100)
+    # month_year_cnt_map = month_year.value_counts().to_dict()
+    # conbined_data['month_year_cnt'] = month_year.map(month_year_cnt_map)
+    #
+    # # Add week-year count
+    # week_year = (conbined_data.timestamp.dt.weekofyear + conbined_data.timestamp.dt.year * 100)
+    # week_year_cnt_map = week_year.value_counts().to_dict()
+    # conbined_data['week_year_cnt'] = week_year.map(week_year_cnt_map)
+    #
+    # # Add month and day-of-week
+    # conbined_data['month'] = conbined_data.timestamp.dt.month
+    # conbined_data['dow'] = conbined_data.timestamp.dt.dayofweek
+
+    # Remove timestamp column (may overfit the model in train)
+    # conbined_data.drop(['timestamp'], axis=1, inplace=True)
+
+    return conbined_data
+
+
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_imputed_data()
@@ -151,6 +172,25 @@ def main():
     train, test = perform_material_features(train, test)
     train, test = perform_build_year_features(train, test)
     train, test = perform_num_room_features(train, test)
+
+    train_id = train['id']
+    train_price_doc = train['price_doc']
+    train.drop(['id', 'price_doc'], axis=1, inplace=True)
+    test_id = test['id']
+    test.drop(['id'], axis=1, inplace=True)
+
+    # 合并训练集和测试集
+    conbined_data = pd.concat([train[test.columns.values], test])
+    conbined_data.columns = test.columns.values
+
+    conbined_data = perform_timestamp_features(conbined_data)
+
+    train = conbined_data.iloc[:train.shape[0], :]
+    test = conbined_data.iloc[train.shape[0]:, :]
+
+    train['id'] = train_id
+    train['price_doc'] = train_price_doc
+    test['id'] = test_id
     print 'train:', train.shape, ', test:', test.shape
     print("Save data...")
     data_utils.save_data(train, test, _)

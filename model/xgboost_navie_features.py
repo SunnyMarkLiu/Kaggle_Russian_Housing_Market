@@ -29,15 +29,18 @@ def main():
     train, test, macro = data_utils.load_data()
 
     ylog_train_all = train['price_doc']
-    train.drop(['id', 'price_doc', 'timestamp'], axis=1, inplace=True)
+    train.drop(['id', 'price_doc'], axis=1, inplace=True)
     submit_ids = test['id']
-    test.drop(['id', 'timestamp'], axis=1, inplace=True)
+    test.drop(['id'], axis=1, inplace=True)
 
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
-
-    conbined_data.columns = test.columns.values
-
+    macro_cols = ["balance_trade", "balance_trade_growth", "eurrub", "average_provision_of_build_contract",
+                  "micex_rgbi_tr", "micex_cbi_tr", "deposits_rate", "mortgage_value", "mortgage_rate",
+                  "income_per_cap", "rent_price_4+room_bus", "museum_visitis_per_100_cap", "apartment_build", "timestamp"]
+    conbined_data = pd.merge_ordered(conbined_data, macro[macro_cols], on='timestamp', how='left')
+    # conbined_data.columns = test.columns.values
+    conbined_data.drop(['timestamp'], axis=1, inplace=True)
     print "conbined_data:", conbined_data.shape
 
     # str_columns = conbined_data.select_dtypes(include=['object']).columns.values.tolist()
@@ -93,32 +96,27 @@ def main():
     dtest = xgb.DMatrix(X_test, feature_names=df_columns)
 
     xgb_params = {
-        'eta': 0.01,
+        'eta': 0.05,
         'max_depth': 5,
-        'subsample': 0.7,
-        'booster': 'dart',
+        'subsample': 1.0,
         'colsample_bytree': 0.7,
         'objective': 'reg:linear',
         'eval_metric': 'rmse',
         'silent': 1
     }
+
     num_round = 1000
     xgb_params['nthread'] = 24
     # param['eval_metric'] = "auc"
     plst = xgb_params.items()
     plst += [('eval_metric', 'rmse')]
-    evallist = [(dval, 'eval'), (dtrain, 'train')]
+    evallist = [(dval, 'eval')]
 
-    learning_rates_list = [0.1] * 100 + [0.01] * 100 + [0.005] * 200 + [0.001] * 300 + [0.0001] * 300
-
-    bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=20, verbose_eval=10,
-                    learning_rates=learning_rates_list)
+    bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=100, verbose_eval=10)
 
     num_boost_round = bst.best_iteration
     print 'best_iteration: ', num_boost_round
-    learning_rates_list = [0.1] * 100 + [0.01] * 100 + [0.005] * 200 + [0.001] * 300 + [0.0001] * (num_boost_round - 700)
-    model = xgb.train(dict(xgb_params, silent=0), dtrain_all, num_boost_round=num_boost_round,
-                      learning_rates=learning_rates_list)
+    model = xgb.train(dict(xgb_params, silent=1), dtrain_all, num_boost_round=num_boost_round)
 
     print 'predict submit...'
     ylog_pred = model.predict(dtest)

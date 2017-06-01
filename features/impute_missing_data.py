@@ -46,6 +46,21 @@ def simple_impute_data(train, test):
     simple_filling_missing_data(train, ['material'], 0)
     simple_filling_missing_data(test, ['material'], 0)
 
+    train['build_year'][train['build_year'] == 20052009] = 2005
+    train['build_year'][train['build_year'] == 20] = 2000
+    train['build_year'][train['build_year'] == 215] = 2015
+    train['build_year'][train['build_year'] == 4965] = 1965
+    train['build_year'][train['build_year'] == 71] = 1971
+
+    test['build_year'][test['build_year'] == 20052009] = 2005
+    test['build_year'][test['build_year'] == 20] = 2000
+    test['build_year'][test['build_year'] == 215] = 2015
+    test['build_year'][test['build_year'] == 4965] = 1965
+    test['build_year'][test['build_year'] == 71] = 1971
+
+    train['build_year'][train['build_year'] < 20] = None
+    test['build_year'][test['build_year'] < 20] = None
+
     return train, test
 
 
@@ -94,7 +109,6 @@ def kmeans_impute_train_test_data(train, test):
     num_columns.remove('id')
     num_columns.remove('material')
     num_columns.remove('state')
-    num_columns.remove('build_year')
 
     missing_rates = [0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0]
     conbined_data = kmeans_impute_data(conbined_data, num_columns, missing_rates)

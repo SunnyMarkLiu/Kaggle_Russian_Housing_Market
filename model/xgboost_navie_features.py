@@ -29,12 +29,13 @@ def main():
     train, test, macro = data_utils.load_data()
 
     ylog_train_all = train['price_doc']
-    train.drop(['id', 'price_doc'], axis=1, inplace=True)
+    train.drop(['id', 'price_doc', 'timestamp'], axis=1, inplace=True)
     submit_ids = test['id']
-    test.drop(['id'], axis=1, inplace=True)
+    test.drop(['id', 'timestamp'], axis=1, inplace=True)
 
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
+
     conbined_data.columns = test.columns.values
 
     print "conbined_data:", conbined_data.shape

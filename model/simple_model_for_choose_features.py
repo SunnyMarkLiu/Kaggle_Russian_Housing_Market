@@ -32,6 +32,10 @@ def main():
 
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
+
+    # Remove timestamp column (may overfit the model in train)
+    conbined_data.drop(['timestamp'], axis=1, inplace=True)
+
     conbined_data.columns = test.columns.values
 
     str_columns = conbined_data.select_dtypes(include=['object']).columns.values.tolist()

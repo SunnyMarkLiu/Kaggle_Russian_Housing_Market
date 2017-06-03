@@ -36,9 +36,34 @@ def simple_filling_missing_data(dataframe, columns, value):
             dataframe.loc[dataframe[column].isnull(), column] = value
 
 
-def simple_impute_data(train, test):
-    simple_filling_missing_data(train, ['build_year'], 0)
-    simple_filling_missing_data(test, ['build_year'], 0)
+def simple_impute_data_preprocess(train, test):
+    # 去除 life_sq > full_sq 和 kitch_sq > full_sq 的异常数据
+    null_bool = train['life_sq'].isnull()
+    remove_indexs = []
+
+    gap = 50
+    # 去除训练集中出现的数据而测试集中没有出现的数据避免过拟合
+    top_full_sq = test['full_sq'].max() + gap
+    top_life_sq = test['life_sq'].max() + gap
+
+    for i in range(train.shape[0]):
+        if not null_bool[i] and ((train.loc[i, 'life_sq'] > train.loc[i, 'full_sq']) or
+                                     (train.loc[i, 'full_sq'] > top_full_sq) or
+                                     (train.loc[i, 'life_sq'] > top_life_sq)):
+            remove_indexs.append(i)
+
+    null_bool = train['kitch_sq'].isnull()
+    for i in range(train.shape[0]):
+        if not null_bool[i] and (train.loc[i, 'kitch_sq'] > train.loc[i, 'full_sq']):
+            remove_indexs.append(i)
+
+    remove_indexs = list(set(remove_indexs))
+    train.drop(remove_indexs, inplace=True)
+    # 去除train中的价格超过 1e8 area却相对较小的 outlier 数据
+    train = train[train['price_doc'] < 1e8]
+
+    simple_filling_missing_data(train, ['build_year'], -1)
+    simple_filling_missing_data(test, ['build_year'], -1)
 
     simple_filling_missing_data(train, ['state'], -1)
     simple_filling_missing_data(test, ['state'], -1)
@@ -177,7 +202,7 @@ def main():
 
     if contains_null(train) | contains_null(test) | contains_null(macro):
         print("填充 train, test 缺失数据...")
-        train, test = simple_impute_data(train, test)
+        train, test = simple_impute_data_preprocess(train, test)
         train, test = impute_categories_data(train, test)
         train, test = kmeans_impute_train_test_data(train, test)
         print("填充 macro 缺失数据...")

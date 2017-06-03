@@ -27,15 +27,6 @@ from impute_missing_data import simple_filling_missing_data
 
 def perform_area_features(train, test):
     """ 处理 area 相关字段 """
-    # 去除 life_sq > full_sq 和 kitch_sq > full_sq 的异常数据
-    train = train[train['kitch_sq'] <= train['full_sq']]
-    # train = train[train['life_sq'] <= train['full_sq']]
-
-    gap = 50
-    # 去除训练集中出现的数据而测试集中没有出现的数据避免过拟合
-    train = train[train['full_sq'] <= test['full_sq'].max() + gap]
-    train = train[train['life_sq'] <= test['life_sq'].max() + gap]
-
     # 添加面积比例
     # train['life_sq_ratio'] = train['life_sq'] / (train['full_sq'] + 1)
     # train['kitch_sq_ratio'] = train['kitch_sq'] / (train['full_sq'] + 1)
@@ -79,10 +70,8 @@ def perform_material_features(train, test):
 
 def perform_build_year_features(train, test):
     """ 处理 build_year 相关字段 """
-    train['build_year'] = train['build_year'].map(lambda x: int(x))
-    test['build_year'] = test['build_year'].map(lambda x: int(x))
     # 去除训练集中 build_year 异常的数据
-    train = train[train['build_year'] <= test['build_year'][test['build_year'] > 0].max()]
+    # train = train[train['build_year'] <= test['build_year'][test['build_year'] > 0].max()]
     return train, test
 
 
@@ -130,7 +119,7 @@ def perform_round_int_features(train, test):
                       'raion_build_count_with_builddate_info', 'build_count_1921-1945',
                       'build_count_1946-1970', 'build_count_1971-1995', 'build_count_after_1995',
                       'ID_railroad_station_walk', 'ID_railroad_station_avto', 'ID_big_road1',
-                      'ID_big_road2']
+                      'ID_big_road2', 'build_year']
 
     for column in rounds_columns:
         train[column] = train[column].map(lambda x: int(round(x)))

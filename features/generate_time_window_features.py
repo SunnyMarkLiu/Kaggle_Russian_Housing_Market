@@ -12,6 +12,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
+import numpy as np
 import pandas as pd
 # remove warnings
 import warnings
@@ -31,6 +32,14 @@ def generate_region_timewindow_price(train, test):
         df_sub_area[c] = pd.factorize(df_sub_area[c])[0]
 
     train = pd.concat([train, df_sub_area], axis=1)
+
+    df_sub_area = test[['sub_area', 'year']].select_dtypes(include=['object']).copy()
+    test['sub_area_str'] = test['sub_area']
+    del test['sub_area']
+    for c in df_sub_area:
+        df_sub_area[c] = pd.factorize(df_sub_area[c])[0]
+
+    test = pd.concat([test, df_sub_area], axis=1)
 
     for static in ['mean', 'median']:
         df = train.groupby(['sub_area', 'year']).agg(static)['price_doc'].reset_index()

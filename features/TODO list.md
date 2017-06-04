@@ -12,3 +12,5 @@ https://www.kaggle.com/captcalculator/a-very-extensive-sberbank-exploratory-anal
 - Education Features
 - Cultural/Recreational Features
 - Infrastructure Features
+
+注意考察 train、test 的特征分布情况！

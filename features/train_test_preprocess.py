@@ -119,7 +119,7 @@ def perform_round_int_features(train, test):
                       'raion_build_count_with_builddate_info', 'build_count_1921-1945',
                       'build_count_1946-1970', 'build_count_1971-1995', 'build_count_after_1995',
                       'ID_railroad_station_walk', 'ID_railroad_station_avto', 'ID_big_road1',
-                      'ID_big_road2', 'build_year']
+                      'ID_big_road2', 'build_year', 'material']
 
     for column in rounds_columns:
         train[column] = train[column].map(lambda x: int(round(x)))
@@ -129,19 +129,12 @@ def perform_round_int_features(train, test):
 
 
 def perform_timestamp_features(conbined_data):
-    # # Add month-year
-    # month_year = (conbined_data.timestamp.dt.month + conbined_data.timestamp.dt.year * 100)
-    # month_year_cnt_map = month_year.value_counts().to_dict()
-    # conbined_data['month_year_cnt'] = month_year.map(month_year_cnt_map)
-    #
-    # # Add week-year count
-    # week_year = (conbined_data.timestamp.dt.weekofyear + conbined_data.timestamp.dt.year * 100)
-    # week_year_cnt_map = week_year.value_counts().to_dict()
-    # conbined_data['week_year_cnt'] = week_year.map(week_year_cnt_map)
-    #
-    # # Add month and day-of-week
-    # conbined_data['month'] = conbined_data.timestamp.dt.month
-    # conbined_data['dow'] = conbined_data.timestamp.dt.dayofweek
+    """添加时间属性，用于后期应用时间窗"""
+    # Add month and day-of-week
+    conbined_data['year'] = conbined_data.timestamp.dt.year
+    conbined_data['month'] = conbined_data.timestamp.dt.month
+    conbined_data['quarter'] = conbined_data.timestamp.dt.quarter
+    conbined_data['weekofyear'] = conbined_data.timestamp.dt.weekofyear
 
     # Remove timestamp column (may overfit the model in train)
     # conbined_data.drop(['timestamp'], axis=1, inplace=True)

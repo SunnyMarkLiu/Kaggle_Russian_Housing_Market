@@ -68,6 +68,9 @@ def simple_impute_data_preprocess(train, test):
     simple_filling_missing_data(train, ['state'], -1)
     simple_filling_missing_data(test, ['state'], -1)
 
+    simple_filling_missing_data(train, ['material'], 1)
+    simple_filling_missing_data(test, ['material'], 1)
+
     train['build_year'][train['build_year'] == 20052009] = 2005
     train['build_year'][train['build_year'] == 20] = 2000
     train['build_year'][train['build_year'] == 215] = 2015

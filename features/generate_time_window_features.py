@@ -30,6 +30,7 @@ def generate_timewindow_salecount(conbined_data):
     timewindow_days = [30*12, 30*8, 30*4, 30*2, 30, 20, 10]
 
     for timewindow in timewindow_days:
+        print 'perform timewindow =', timewindow
         pre_timewindow_salecounts = []
         for i in range(conbined_data.shape[0]):
             today_time = conbined_data.loc[i, 'timestamp']
@@ -40,7 +41,7 @@ def generate_timewindow_salecount(conbined_data):
             df.columns = ['sub_area', 'sale_count']
 
             sale_count = df[df['sub_area'] == conbined_data.loc[i, 'sub_area']]['sale_count'].values
-            sale_count = 0 if len(sale_count) == 0 else sale_count
+            sale_count = 0 if len(sale_count) == 0 else sale_count[0]
             pre_timewindow_salecounts.append(sale_count)
 
         conbined_data['this_sub_area_pre_'+str(timewindow)+'_salecount'] = pre_timewindow_salecounts

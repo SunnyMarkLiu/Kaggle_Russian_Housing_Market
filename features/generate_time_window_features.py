@@ -19,67 +19,60 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
+import datetime
+
 # my own module
 import data_utils
 
 
-def generate_region_timewindow_price(train, test):
-    """按照地区统计时间窗内的价格的统计特征"""
-    df_sub_area = train[['sub_area', 'year']].select_dtypes(include=['object']).copy()
-    train['sub_area_str'] = train['sub_area']
-    del train['sub_area']
-    for c in df_sub_area:
-        df_sub_area[c] = pd.factorize(df_sub_area[c])[0]
+def generate_timewindow_salecount(conbined_data):
+    """按照地区统计时间窗内的销售量"""
+    timewindow_days = [30*12, 30*8, 30*4, 30*2, 30, 20, 10]
 
-    train = pd.concat([train, df_sub_area], axis=1)
+    for timewindow in timewindow_days:
+        pre_timewindow_salecounts = []
+        for i in range(conbined_data.shape[0]):
+            today_time = conbined_data.loc[i, 'timestamp']
+            indexs = (today_time - datetime.timedelta(days=timewindow) < conbined_data['timestamp']) & \
+                     (conbined_data['timestamp'] < today_time)
+            df = conbined_data[indexs]
+            df = df.groupby(['sub_area']).count()['timestamp'].reset_index()
+            df.columns = ['sub_area', 'sale_count']
 
-    df_sub_area = test[['sub_area', 'year']].select_dtypes(include=['object']).copy()
-    test['sub_area_str'] = test['sub_area']
-    del test['sub_area']
-    for c in df_sub_area:
-        df_sub_area[c] = pd.factorize(df_sub_area[c])[0]
+            sale_count = df[df['sub_area'] == conbined_data.loc[i, 'sub_area']]['sale_count'].values
+            sale_count = 0 if len(sale_count) == 0 else sale_count
+            pre_timewindow_salecounts.append(sale_count)
 
-    test = pd.concat([test, df_sub_area], axis=1)
+        conbined_data['this_sub_area_pre_'+str(timewindow)+'_salecount'] = pre_timewindow_salecounts
 
-    for static in ['mean', 'median']:
-        df = train.groupby(['sub_area', 'year']).agg(static)['price_doc'].reset_index()
-        sub_area_mean_price = df.pivot('sub_area', 'year', 'price_doc').reset_index().fillna(np.nan)
-        sub_area_mean_price.columns = ['sub_area', '2011_year', '2012_year', '2013_year', '2014_year', '2015_year']
-
-        # 添加2011年的平均价格
-        for i in range(train.shape[0]):
-            train['sub_area_2011_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == train.loc[i, 'sub_area']]['2011_year']
-            train['sub_area_2012_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == train.loc[i, 'sub_area']]['2012_year']
-            train['sub_area_2013_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == train.loc[i, 'sub_area']]['2013_year']
-            train['sub_area_2014_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == train.loc[i, 'sub_area']]['2014_year']
-            train['sub_area_2015_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == train.loc[i, 'sub_area']]['2015_year']
-
-        for i in range(test.shape[0]):
-            test['sub_area_2011_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == test.loc[i, 'sub_area']]['2011_year']
-            test['sub_area_2012_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == test.loc[i, 'sub_area']]['2012_year']
-            test['sub_area_2013_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == test.loc[i, 'sub_area']]['2013_year']
-            test['sub_area_2014_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == test.loc[i, 'sub_area']]['2014_year']
-            test['sub_area_2015_year_'+static+'_price'] = \
-                sub_area_mean_price[sub_area_mean_price['sub_area'] == test.loc[i, 'sub_area']]['2015_year']
-
-    return train, test
+    return conbined_data
 
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_data()
     print 'train:', train.shape, ', test:', test.shape
 
-    train, test = generate_region_timewindow_price(train, test)
+    train_id = train['id']
+    train_price_doc = train['price_doc']
+    train.drop(['id', 'price_doc'], axis=1, inplace=True)
+    test_id = test['id']
+    test.drop(['id'], axis=1, inplace=True)
 
+    # 合并训练集和测试集
+    conbined_data = pd.concat([train[test.columns.values], test])
+    conbined_data.columns = test.columns.values
+    conbined_data = conbined_data.reset_index()
+
+    conbined_data = generate_timewindow_salecount(conbined_data)
+
+    train = conbined_data.iloc[:train.shape[0], :]
+    test = conbined_data.iloc[train.shape[0]:, :]
+
+    train['id'] = train_id
+    train['price_doc'] = train_price_doc
+    test['id'] = test_id
+    train = train.reset_index()
+    test = test.reset_index()
     print 'train:', train.shape, ', test:', test.shape
     print("Save data...")
     data_utils.save_data(train, test, _)

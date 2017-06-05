@@ -135,7 +135,6 @@ def kmeans_impute_datas(conbined_data, num_columns, missing_rates):
 def kmeans_impute_train_test_data(train, test):
     conbined_data = pd.concat([train[test.columns.values], test])
     conbined_data.columns = test.columns.values
-    conbined_data = conbined_data.reset_index()
     train_price_doc = train['price_doc']
 
     num_columns = conbined_data.select_dtypes(exclude=['object']).columns.values.tolist()

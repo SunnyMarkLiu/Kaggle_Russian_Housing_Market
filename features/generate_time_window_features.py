@@ -17,6 +17,8 @@ import pandas as pd
 # remove warnings
 import warnings
 
+from tqdm import tqdm
+
 warnings.filterwarnings('ignore')
 
 import datetime
@@ -27,12 +29,12 @@ import data_utils
 
 def generate_timewindow_salecount(conbined_data):
     """按照地区统计时间窗内的销售量"""
-    timewindow_days = [30*12, 30*8, 30*4, 30*2, 30, 20, 10]
+    timewindow_days = [30*6, 30*4, 30*2, 30, 20, 10]
 
     for timewindow in timewindow_days:
         print 'perform timewindow =', timewindow
         pre_timewindow_salecounts = []
-        for i in range(conbined_data.shape[0]):
+        for i in tqdm(range(conbined_data.shape[0])):
             today_time = conbined_data.loc[i, 'timestamp']
             indexs = (today_time - datetime.timedelta(days=timewindow) < conbined_data['timestamp']) & \
                      (conbined_data['timestamp'] < today_time)

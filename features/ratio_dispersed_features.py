@@ -42,6 +42,7 @@ def main():
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
     conbined_data.columns = test.columns.values
+    conbined_data.reset_index()
 
     conbined_data = dispersed_neighbourhood_ratio_features(conbined_data)
 

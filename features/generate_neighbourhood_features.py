@@ -12,6 +12,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
+import numpy as np
 import pandas as pd
 # remove warnings
 import warnings
@@ -25,7 +26,7 @@ import data_utils
 def gen_area_features(conbined_data):
     """构造周边面积相关特征"""
     # 人均周边所占面积
-    conbined_data['per_raion_person_area'] = conbined_data['area_m'] / conbined_data['raion_popul'].astype(float)
+    conbined_data['per_raion_person_area'] = conbined_data['area_m'] / np.maximum(conbined_data["raion_popul"].astype("float"), 1.0)
     # 人均绿地面积（模型过拟合）
     # conbined_data['per_raion_person_green_zone_part '] = conbined_data['green_zone_part'] / conbined_data[
     #     'raion_popul'].astype(float)
@@ -98,8 +99,7 @@ def generate_population_features(conbined_data):
     # 小于工作年龄的人口比例（模型过拟合）
     # conbined_data['young_underwork_vs_full_all_ratio'] = conbined_data['young_all'] / conbined_data['full_all'].astype(float)
     # 小于工龄的男性人口比例
-    conbined_data['young_male_vs_underwork_ratio'] = conbined_data['young_male'] / conbined_data['young_all'].astype(
-        float)
+    conbined_data['young_male_vs_underwork_ratio'] = conbined_data['young_male'] / np.maximum(conbined_data["young_all"].astype("float"), 1.0)
     # 小于工龄的女性人口比例（模型过拟合）
     # conbined_data['young_female_vs_underwork_ratio'] = conbined_data['young_female'] / conbined_data['young_all'].astype(float)
     # # 男性中小于工龄的人口比例（模型过拟合）
@@ -112,7 +112,7 @@ def generate_population_features(conbined_data):
     # 劳动年龄人口比例（模型过拟合）
     # conbined_data['work_all_vs_full_all_ratio'] = conbined_data['work_all'] / conbined_data['full_all'].astype(float)
     # 劳动年龄男性人口比例
-    conbined_data['work_male_vs_work_all_ratio'] = conbined_data['work_male'] / conbined_data['work_all'].astype(float)
+    conbined_data['work_male_vs_work_all_ratio'] = conbined_data['work_male'] / np.maximum(conbined_data["work_all"].astype("float"), 1.0)
     # # 劳动年龄女性人口比例（模型过拟合）
     # conbined_data['work_female_vs_work_all_ratio'] = conbined_data['work_female'] / conbined_data['work_all'].astype(float)
     # # 男性中劳动年龄的人口比例（模型过拟合）
@@ -125,8 +125,7 @@ def generate_population_features(conbined_data):
     # 年龄大于工作年龄的人口比例（模型过拟合）
     # conbined_data['ekder_all_vs_full_all_ratio'] = conbined_data['ekder_all'] / conbined_data['full_all'].astype(float)
     # 年龄大于工作年龄的人口男性人口比例
-    conbined_data['ekder_male_vs_ekder_all_ratio'] = conbined_data['ekder_male'] / conbined_data['ekder_all'].astype(
-        float)
+    conbined_data['ekder_male_vs_ekder_all_ratio'] = conbined_data['ekder_male'] / np.maximum(conbined_data["ekder_all"].astype("float"), 1.0)
     # # 年龄大于工作年龄的人口女性人口比例（模型过拟合）
     # conbined_data['ekder_female_vs_ekder_all_ratio'] = conbined_data['ekder_female'] / conbined_data['ekder_all'].astype(float)
     # # 男性中年龄大于工作年龄的比例（模型过拟合）
@@ -142,15 +141,15 @@ def generate_population_features(conbined_data):
 def generate_population_age_features(conbined_data):
     """生成人口年龄分布的相关特征"""
     # 0-6岁人口比例 0.46068
-    conbined_data['0_6_all_age_ratio'] = conbined_data['0_6_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['0_6_all_age_ratio'] = conbined_data['0_6_all'] / np.maximum(conbined_data["full_all"].astype("float"), 1.0)
     # 7-14岁人口比例 0.460679
-    conbined_data['7_14_all_age_ratio'] = conbined_data['7_14_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['7_14_all_age_ratio'] = conbined_data['7_14_all'] / np.maximum(conbined_data["full_all"].astype("float"), 1.0)
     # 0-17岁人口比例 0.460621
-    conbined_data['0_17_all_age_ratio'] = conbined_data['0_17_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['0_17_all_age_ratio'] = conbined_data['0_17_all'] / np.maximum(conbined_data["full_all"].astype("float"), 1.0)
     # 16-29岁人口比例 0.460626
-    conbined_data['16_29_all_age_ratio'] = conbined_data['16_29_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['16_29_all_age_ratio'] = conbined_data['16_29_all'] / np.maximum(conbined_data["full_all"].astype("float"), 1.0)
     # 0-13岁人口比例 0.460666
-    conbined_data['0_13_all_age_ratio'] = conbined_data['0_13_all'] / conbined_data['full_all'].astype(float)
+    conbined_data['0_13_all_age_ratio'] = conbined_data['0_13_all'] / np.maximum(conbined_data["full_all"].astype("float"), 1.0)
 
     del conbined_data['0_13_all']
     del conbined_data['16_29_all']

@@ -38,8 +38,9 @@ def simple_filling_missing_data(dataframe, columns, value):
 
 def simple_impute_data_preprocess(train, test):
 
+    print '删除缺失数据超过 40% 的特征'
     # 删除缺失数据超过 40% 的特征
-    columns = train.columns.values
+    columns = train.columns.values.tolist()
     columns.remove('id')
     columns.remove('price_doc')
 

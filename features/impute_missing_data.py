@@ -37,6 +37,24 @@ def simple_filling_missing_data(dataframe, columns, value):
 
 
 def simple_impute_data_preprocess(train, test):
+
+    # 删除缺失数据超过 40% 的特征
+    columns = train.columns.values
+    columns.remove('id')
+    columns.remove('price_doc')
+
+    conbined_data = pd.concat([train[columns], test[columns]])
+    missing_df = conbined_data.isnull().sum(axis=0).reset_index()
+    missing_df.columns = ['column_name', 'missing_count']
+    missing_df['missing_ratio'] = missing_df['missing_count'] / conbined_data.shape[0]
+    missing_df = missing_df[missing_df.missing_count > 0]
+    missing_df = missing_df.sort_values(by='missing_ratio', ascending=False)
+    # missing_df
+    big_missing_features = missing_df['column_name'][missing_df['missing_ratio'] > 0.4].values
+
+    train.drop(big_missing_features, axis=1, inplace=True)
+    test.drop(big_missing_features, axis=1, inplace=True)
+
     # 去除 life_sq > full_sq 和 kitch_sq > full_sq 的异常数据
     null_bool = train['life_sq'].isnull()
     remove_indexs = []

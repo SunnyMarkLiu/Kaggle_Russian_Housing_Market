@@ -28,6 +28,7 @@ from conf.configure import Configure
 def main():
     train, test, macro = data_utils.load_data()
 
+    train['price_doc'] = np.log1p(train['price_doc'])
     ylog_train_all = train['price_doc']
     train.drop(['id', 'price_doc'], axis=1, inplace=True)
     submit_ids = test['id']

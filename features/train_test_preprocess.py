@@ -148,7 +148,6 @@ def main():
     print 'train:', train.shape, ', test:', test.shape
 
     print 'perform data cleaning and basic feature engineering'
-    train['price_doc'] = np.log1p(train['price_doc'])
 
     train, test = perform_area_features(train, test)
     train, test = perform_floor_features(train, test)

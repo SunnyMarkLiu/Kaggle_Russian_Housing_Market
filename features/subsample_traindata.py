@@ -41,11 +41,12 @@ def subsample_train(train):
 
 def main():
     print 'loading train datas...'
-    train, test, _ = data_utils.load_data()
+    train, test, _ = data_utils.load_imputed_data()
     print 'train:', train.shape
 
     train = subsample_train(train)
     train = train.reset_index()
+    del train['index']
 
     print 'train:', train.shape
     print("Save data...")

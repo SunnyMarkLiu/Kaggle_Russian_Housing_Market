@@ -41,7 +41,7 @@ def subsample_train(train):
 
 def main():
     print 'loading train datas...'
-    train, test, _ = data_utils.load_imputed_data()
+    train, test, _ = data_utils.load_data()
     print 'train:', train.shape
 
     train = subsample_train(train)

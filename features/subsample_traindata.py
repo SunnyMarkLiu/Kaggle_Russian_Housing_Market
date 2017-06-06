@@ -45,6 +45,7 @@ def main():
     print 'train:', train.shape
 
     train = subsample_train(train)
+    train = train.reset_index()
 
     print 'train:', train.shape
     print("Save data...")

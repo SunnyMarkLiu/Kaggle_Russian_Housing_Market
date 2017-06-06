@@ -52,8 +52,8 @@ def perform_floor_features(train, test):
     test['floor'] = test['floor'].map(lambda f: int(round(f)))
     test['max_floor'] = test['max_floor'].map(lambda f: int(round(f)))
 
-    train['rel_floor'] = train['floor'] / train['max_floor'].astype(float)
-    test['rel_floor'] = test['floor'] / test['max_floor'].astype(float)
+    train['rel_floor'] = train['floor'] / (train['max_floor'].astype(float) + 1)
+    test['rel_floor'] = test['floor'] / (test['max_floor'].astype(float) + 1)
     return train, test
 
 

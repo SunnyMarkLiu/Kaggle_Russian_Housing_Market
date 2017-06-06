@@ -76,9 +76,9 @@ class ReduceVIF(BaseEstimator, TransformerMixin):
             if max_vif > thresh:
                 maxloc = vif.index(max_vif)
                 print('Dropping {} with vif={}'.format(X.columns[maxloc], max_vif))
+                self.drop_features.append(X.columns.tolist()[maxloc])
                 X = X.drop([X.columns.tolist()[maxloc]], axis=1)
                 dropped = True
-                self.drop_features.append(X.columns.tolist()[maxloc])
         return X
 
 

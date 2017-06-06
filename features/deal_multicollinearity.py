@@ -61,10 +61,17 @@ class ReduceVIF(BaseEstimator, TransformerMixin):
         # Taken from https://stats.stackexchange.com/a/253620/53565 and modified
         dropped = True
         while dropped:
+            # Loop repeatedly until we find that all columns within our dataset
+            # have a VIF value we're happy with.
             variables = X.columns
             dropped = False
-            vif = [variance_inflation_factor(X[variables].values, X.columns.get_loc(var)) for var in X.columns]
-
+            vif = []
+            new_vif = 0
+            for var in X.columns:
+                new_vif = variance_inflation_factor(X[variables].values, X.columns.get_loc(var))
+                vif.append(new_vif)
+                if np.isinf(new_vif):
+                    break
             max_vif = max(vif)
             if max_vif > thresh:
                 maxloc = vif.index(max_vif)

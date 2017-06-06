@@ -68,6 +68,8 @@ def main():
 
     conbined_data = generate_timewindow_salecount(conbined_data)
 
+    del conbined_data['index']
+
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 

@@ -11,6 +11,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
+import numpy as np
 import pandas as pd
 from collections import Counter
 
@@ -37,52 +38,83 @@ def simple_filling_missing_data(dataframe, columns, value):
 
 
 def simple_impute_data_preprocess(train, test):
+    """ clean data """
+    print 'clean data...'
+    bad_index = train[train.life_sq > train.full_sq].index
+    train.ix[bad_index, "life_sq"] = np.NaN
+    equal_index = [601, 1896, 2791]
+    test.ix[equal_index, "life_sq"] = test.ix[equal_index, "full_sq"]
+    bad_index = test[test.life_sq > test.full_sq].index
+    test.ix[bad_index, "life_sq"] = np.NaN
+    bad_index = train[train.life_sq < 5].index
+    train.ix[bad_index, "life_sq"] = np.NaN
+    bad_index = test[test.life_sq < 5].index
+    test.ix[bad_index, "life_sq"] = np.NaN
+    bad_index = train[train.full_sq < 5].index
+    train.ix[bad_index, "full_sq"] = np.NaN
+    bad_index = test[test.full_sq < 5].index
+    test.ix[bad_index, "full_sq"] = np.NaN
+    kitch_is_build_year = [13117]
+    train.ix[kitch_is_build_year, "build_year"] = train.ix[kitch_is_build_year, "kitch_sq"]
+    bad_index = train[train.kitch_sq >= train.life_sq].index
+    train.ix[bad_index, "kitch_sq"] = np.NaN
+    bad_index = test[test.kitch_sq >= test.life_sq].index
+    test.ix[bad_index, "kitch_sq"] = np.NaN
+    bad_index = train[(train.kitch_sq == 0).values + (train.kitch_sq == 1).values].index
+    train.ix[bad_index, "kitch_sq"] = np.NaN
+    bad_index = test[(test.kitch_sq == 0).values + (test.kitch_sq == 1).values].index
+    test.ix[bad_index, "kitch_sq"] = np.NaN
+    bad_index = train[(train.full_sq > 210) & (train.life_sq / train.full_sq < 0.3)].index
+    train.ix[bad_index, "full_sq"] = np.NaN
+    bad_index = test[(test.full_sq > 150) & (test.life_sq / test.full_sq < 0.3)].index
+    test.ix[bad_index, "full_sq"] = np.NaN
+    bad_index = train[train.life_sq > 300].index
+    train.ix[bad_index, ["life_sq", "full_sq"]] = np.NaN
+    bad_index = test[test.life_sq > 200].index
+    test.ix[bad_index, ["life_sq", "full_sq"]] = np.NaN
+    train.product_type.value_counts(normalize=True)
+    test.product_type.value_counts(normalize=True)
+    bad_index = train[train.build_year < 1500].index
+    train.ix[bad_index, "build_year"] = np.NaN
+    bad_index = test[test.build_year < 1500].index
+    test.ix[bad_index, "build_year"] = np.NaN
+    bad_index = train[train.num_room == 0].index
+    train.ix[bad_index, "num_room"] = np.NaN
+    bad_index = test[test.num_room == 0].index
+    test.ix[bad_index, "num_room"] = np.NaN
+    bad_index = [10076, 11621, 17764, 19390, 24007, 26713, 29172]
+    train.ix[bad_index, "num_room"] = np.NaN
+    bad_index = [3174, 7313]
+    test.ix[bad_index, "num_room"] = np.NaN
+    bad_index = train[(train.floor == 0).values * (train.max_floor == 0).values].index
+    train.ix[bad_index, ["max_floor", "floor"]] = np.NaN
+    bad_index = train[train.floor == 0].index
+    train.ix[bad_index, "floor"] = np.NaN
+    bad_index = train[train.max_floor == 0].index
+    train.ix[bad_index, "max_floor"] = np.NaN
+    bad_index = test[test.max_floor == 0].index
+    test.ix[bad_index, "max_floor"] = np.NaN
+    bad_index = train[train.floor > train.max_floor].index
+    train.ix[bad_index, "max_floor"] = np.NaN
+    bad_index = test[test.floor > test.max_floor].index
+    test.ix[bad_index, "max_floor"] = np.NaN
+    train.floor.describe(percentiles=[0.9999])
+    bad_index = [23584]
+    train.ix[bad_index, "floor"] = np.NaN
+    train.material.value_counts()
+    test.material.value_counts()
+    train.state.value_counts()
+    bad_index = train[train.state == 33].index
+    train.ix[bad_index, "state"] = np.NaN
+    test.state.value_counts()
 
-    print '删除缺失数据超过 40% 的特征'
-    # 删除缺失数据超过 40% 的特征
-    columns = train.columns.values.tolist()
-    columns.remove('id')
-    columns.remove('price_doc')
+    # brings error down a lot by removing extreme price per sqm
+    train.loc[train.full_sq == 0, 'full_sq'] = 50
+    train = train[train.price_doc / train.full_sq <= 600000]
+    train = train[train.price_doc / train.full_sq >= 10000]
 
-    conbined_data = pd.concat([train[columns], test[columns]])
-    missing_df = conbined_data.isnull().sum(axis=0).reset_index()
-    missing_df.columns = ['column_name', 'missing_count']
-    missing_df['missing_ratio'] = missing_df['missing_count'] / conbined_data.shape[0]
-    missing_df = missing_df[missing_df.missing_count > 0]
-    missing_df = missing_df.sort_values(by='missing_ratio', ascending=False)
-    # missing_df
-    big_missing_features = missing_df['column_name'][missing_df['missing_ratio'] > 0.4].values
-
-    train.drop(big_missing_features, axis=1, inplace=True)
-    test.drop(big_missing_features, axis=1, inplace=True)
-
-    # 去除 life_sq > full_sq 和 kitch_sq > full_sq 的异常数据
-    null_bool = train['life_sq'].isnull()
-    remove_indexs = []
-
-    gap = 50
-    # 去除训练集中出现的数据而测试集中没有出现的数据避免过拟合
-    top_full_sq = test['full_sq'].max() + gap
-    top_life_sq = test['life_sq'].max() + gap
-
-    for i in range(train.shape[0]):
-        if not null_bool[i] and ((train.loc[i, 'life_sq'] > train.loc[i, 'full_sq']) or
-                                     (train.loc[i, 'full_sq'] > top_full_sq) or
-                                     (train.loc[i, 'life_sq'] > top_life_sq)):
-            remove_indexs.append(i)
-
-    null_bool = train['kitch_sq'].isnull()
-    for i in range(train.shape[0]):
-        if not null_bool[i] and (train.loc[i, 'kitch_sq'] > train.loc[i, 'full_sq']):
-            remove_indexs.append(i)
-
-    remove_indexs = list(set(remove_indexs))
-    train.drop(remove_indexs, inplace=True)
     # 去除train中的价格超过 1e8 area却相对较小的 outlier 数据
     train = train[train['price_doc'] < 1e8]
-
-    simple_filling_missing_data(train, ['build_year'], -1)
-    simple_filling_missing_data(test, ['build_year'], -1)
 
     simple_filling_missing_data(train, ['state'], -1)
     simple_filling_missing_data(test, ['state'], -1)

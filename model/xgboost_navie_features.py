@@ -18,8 +18,9 @@ import xgboost as xgb
 
 # remove warnings
 import warnings
-
 warnings.filterwarnings('ignore')
+from sklearn import preprocessing
+
 # my own module
 from features import data_utils
 from conf.configure import Configure
@@ -36,29 +37,20 @@ def main():
 
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
-    macro_cols = ["balance_trade", "balance_trade_growth", "eurrub", "average_provision_of_build_contract",
-                  "micex_rgbi_tr", "micex_cbi_tr", "deposits_rate", "mortgage_value", "mortgage_rate",
-                  "income_per_cap", "rent_price_4+room_bus", "museum_visitis_per_100_cap", "apartment_build", "timestamp"]
-    conbined_data = pd.merge_ordered(conbined_data, macro[macro_cols], on='timestamp', how='left')
-    # conbined_data.columns = test.columns.values
+    # macro_cols = ["balance_trade", "balance_trade_growth", "eurrub", "average_provision_of_build_contract",
+    #               "micex_rgbi_tr", "micex_cbi_tr", "deposits_rate", "mortgage_value", "mortgage_rate",
+    #               "income_per_cap", "rent_price_4+room_bus", "museum_visitis_per_100_cap", "apartment_build", "timestamp"]
+    # conbined_data = pd.merge_ordered(conbined_data, macro[macro_cols], on='timestamp', how='left')
+
     conbined_data.drop(['timestamp'], axis=1, inplace=True)
     print "conbined_data:", conbined_data.shape
 
-    # str_columns = conbined_data.select_dtypes(include=['object']).columns.values.tolist()
-
     # Deal with categorical values
-    df_numeric = conbined_data.select_dtypes(exclude=['object'])
-    df_obj = conbined_data.select_dtypes(include=['object']).copy()
-
-    for c in df_obj:
-        df_obj[c] = pd.factorize(df_obj[c])[0]
-
-    conbined_data = pd.concat([df_numeric, df_obj], axis=1)
-
-    # dummy code
-    # dummies_data = pd.get_dummies(conbined_data[str_columns])
-    # conbined_data[dummies_data.columns] = dummies_data[dummies_data.columns]
-    # conbined_data.drop(str_columns, axis=1, inplace=True)
+    for c in conbined_data.columns:
+        if conbined_data[c].dtype == 'object':
+            lbl = preprocessing.LabelEncoder()
+            lbl.fit(list(conbined_data[c].values))
+            conbined_data[c] = lbl.transform(list(conbined_data[c].values))
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
@@ -99,7 +91,7 @@ def main():
     xgb_params = {
         'eta': 0.05,
         'max_depth': 5,
-        'subsample': 1.0,
+        'subsample': 0.7,
         'colsample_bytree': 0.7,
         'objective': 'reg:linear',
         'eval_metric': 'rmse',

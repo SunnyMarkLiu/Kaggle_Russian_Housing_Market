@@ -85,7 +85,8 @@ class ReduceVIF(BaseEstimator, TransformerMixin):
 def deal_multicollinearity(train_num, test_num, y):
     transformer = ReduceVIF(impute=False)
     train_num = transformer.fit_transform(train_num, y)
-    test_num.drop([transformer.drop_features], axis=1, inplace=True)
+    print transformer.drop_features
+    test_num.drop(transformer.drop_features, axis=1, inplace=True)
     return train_num, test_num
 
 
@@ -107,8 +108,11 @@ def main():
 
     train_num, test_num = deal_multicollinearity(train[num_columns], test[num_columns], train_price_doc)
 
-    train = pd.concat([train_num, train[str_columns]], axis=1)
-    test = pd.concat([test_num, test[str_columns]], axis=1)
+    train_t = pd.concat([train_num, train['timestamp']], axis=1)
+    train = pd.concat([train_t, train[str_columns]], axis=1)
+
+    test_t = pd.concat([test_num, test['timestamp']], axis=1)
+    test = pd.concat([test_t, test[str_columns]], axis=1)
 
     train['id'] = train_id
     train['price_doc'] = train_price_doc

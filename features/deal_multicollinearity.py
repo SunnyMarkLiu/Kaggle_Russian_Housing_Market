@@ -23,11 +23,12 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 # remove warnings
 import warnings
-
 warnings.filterwarnings('ignore')
+import cPickle
 
 # my own module
 import data_utils
+from conf.configure import Configure
 
 
 class ReduceVIF(BaseEstimator, TransformerMixin):
@@ -83,10 +84,18 @@ class ReduceVIF(BaseEstimator, TransformerMixin):
 
 
 def deal_multicollinearity(train_num, test_num, y):
-    transformer = ReduceVIF(impute=False)
-    train_num = transformer.fit_transform(train_num, y)
-    print transformer.drop_features
-    test_num.drop(transformer.drop_features, axis=1, inplace=True)
+    if not os.path.exists(Configure.multicollinearity_features):
+        transformer = ReduceVIF(impute=False)
+        train_num = transformer.fit_transform(train_num, y)
+        print transformer.drop_features
+        test_num.drop(transformer.drop_features, axis=1, inplace=True)
+        with open(Configure.multicollinearity_features, "wb") as f:
+            cPickle.dump(transformer.drop_features, f, -1)
+    else:
+        with open(Configure.multicollinearity_features, "rb") as f:
+            drop_features = cPickle.load(f)
+            train_num.drop(drop_features, axis=1, inplace=True)
+            test_num.drop(drop_features, axis=1, inplace=True)
     return train_num, test_num
 
 

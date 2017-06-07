@@ -24,3 +24,5 @@ class Configure(object):
     processed_train_path = '../data/processed_train_data.pkl'
     processed_test_path = '../data/processed_test_data.pkl'
     processed_macro_path = '../data/processed_macro_data.pkl'
+
+    multicollinearity_features = '../data/multicollinearity_features.pkl'

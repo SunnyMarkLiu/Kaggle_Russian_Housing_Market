@@ -79,11 +79,11 @@ def perform_product_type_features(train, test):
 
 def perform_timestamp_features(conbined_data):
     """添加时间属性，用于后期应用时间窗"""
-    # Add month and day-of-week
+    # 注意 year 特征测试集和训练集不一样，会造成模型过拟合！
     # conbined_data['year'] = conbined_data.timestamp.dt.year
-    # conbined_data['month'] = conbined_data.timestamp.dt.month
-    # conbined_data['quarter'] = conbined_data.timestamp.dt.quarter
-    # conbined_data['weekofyear'] = conbined_data.timestamp.dt.weekofyear
+    conbined_data['month'] = conbined_data.timestamp.dt.month
+    conbined_data['quarter'] = conbined_data.timestamp.dt.quarter
+    conbined_data['weekofyear'] = conbined_data.timestamp.dt.weekofyear
 
     # Remove timestamp column (may overfit the model in train)
     # conbined_data.drop(['timestamp'], axis=1, inplace=True)

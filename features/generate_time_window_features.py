@@ -64,11 +64,9 @@ def main():
     # 合并训练集和测试集
     conbined_data = pd.concat([train[test.columns.values], test])
     conbined_data.columns = test.columns.values
-    conbined_data = conbined_data.reset_index()
+    conbined_data.index = range(conbined_data.shape[0])
 
     conbined_data = generate_timewindow_salecount(conbined_data)
-
-    del conbined_data['index']
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

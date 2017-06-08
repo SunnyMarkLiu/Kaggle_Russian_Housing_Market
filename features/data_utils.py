@@ -95,3 +95,10 @@ def save_imputed_data(train, test, macro):
 
     if macro is not None:
         macro.to_csv(Configure.original_imputed_macro_path, index=False)
+
+
+def load_longitude_latitude_data():
+    """加载 subarea 经纬度数据"""
+    longitude_latitude = pd.read_csv(Configure.original_longitude_latitude_path)
+    del longitude_latitude['no']
+    return longitude_latitude

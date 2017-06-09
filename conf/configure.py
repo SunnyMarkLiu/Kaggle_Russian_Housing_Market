@@ -19,6 +19,7 @@ class Configure(object):
     original_imputed_test_path = '../data/imputed_test.csv'
     original_imputed_macro_path = '../data/imputed_macro.csv'
     original_longitude_latitude_path = '../data/Subarea_Longitud_Latitud.csv'
+    predicted_test_prices_path = '../data/test_predict_price.csv'
 
     submission_path = '../result/submission_{}.csv'.format(time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time())))
 

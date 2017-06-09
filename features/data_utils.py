@@ -102,3 +102,8 @@ def load_longitude_latitude_data():
     longitude_latitude = pd.read_csv(Configure.original_longitude_latitude_path)
     del longitude_latitude['no']
     return longitude_latitude
+
+def load_predict_test_prices():
+    """加载 test 的预测价格，用于抽取时间窗信息"""
+    predicted_test_prices = pd.read_csv(Configure.predicted_test_prices_path)
+    return predicted_test_prices

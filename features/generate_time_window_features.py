@@ -12,7 +12,6 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
-import numpy as np
 import pandas as pd
 # remove warnings
 import warnings
@@ -27,10 +26,9 @@ import datetime
 import data_utils
 
 
-def generate_timewindow_salecount(conbined_data):
+def generate_timewindow_salecount(conbined_data, timewindow_days):
     """按照地区统计时间窗内的销售量"""
-    timewindow_days = [30*6, 30*4, 30*2, 30, 20, 10]
-
+    print '按照地区统计时间窗内的销售量...'
     for timewindow in timewindow_days:
         print 'perform timewindow =', timewindow
         pre_timewindow_salecounts = []
@@ -50,15 +48,38 @@ def generate_timewindow_salecount(conbined_data):
 
     return conbined_data
 
+def generate_timewindow_price(conbined_data, timewindow_days):
+    """按照地区统计时间窗内的价格"""
+    print '按照地区统计时间窗内的价格...'
+    for timewindow in timewindow_days:
+        print 'perform timewindow =', timewindow
+        pre_timewindow_saleprice_doc = []
+        for i in tqdm(range(conbined_data.shape[0])):
+            today_time = conbined_data.loc[i, 'timestamp']
+            indexs = (today_time - datetime.timedelta(days=timewindow) < conbined_data['timestamp']) & \
+                     (conbined_data['timestamp'] < today_time)
+            df = conbined_data[indexs]
+            df = df.groupby(['sub_area']).mean()['price_doc'].reset_index()
+            df.columns = ['sub_area', 'sale_count']
+
+            mean_price = df[df['sub_area'] == conbined_data.loc[i, 'sub_area']]['sale_count'].values
+            mean_price = 0 if len(mean_price) == 0 else mean_price[0]
+            pre_timewindow_saleprice_doc.append(mean_price)
+
+        conbined_data['this_sub_area_pre_' + str(timewindow) + '_mean_price'] = pre_timewindow_saleprice_doc
+
+    return conbined_data
+
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_data()
+    predict_test_prices = data_utils.load_predict_test_prices()
     print 'train:', train.shape, ', test:', test.shape
 
     train_id = train['id']
-    train_price_doc = train['price_doc']
-    train.drop(['id', 'price_doc'], axis=1, inplace=True)
+    train.drop(['id'], axis=1, inplace=True)
     test_id = test['id']
+    test['price_doc'] = predict_test_prices['price_doc']
     test.drop(['id'], axis=1, inplace=True)
 
     # 合并训练集和测试集
@@ -66,14 +87,17 @@ def main():
     conbined_data.columns = test.columns.values
     conbined_data.index = range(conbined_data.shape[0])
 
-    conbined_data = generate_timewindow_salecount(conbined_data)
+    timewindow_days = [30 * 6, 30 * 4, 30 * 2, 30, 20, 10]
+    conbined_data = generate_timewindow_salecount(conbined_data, timewindow_days)
+    conbined_data = generate_timewindow_price(conbined_data, timewindow_days)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 
     train['id'] = train_id
-    train['price_doc'] = train_price_doc
     test['id'] = test_id
+    test.drop(['price_doc'], axis=1, inplace=True)
+
     print 'train:', train.shape, ', test:', test.shape
     print("Save data...")
     data_utils.save_data(train, test, _)

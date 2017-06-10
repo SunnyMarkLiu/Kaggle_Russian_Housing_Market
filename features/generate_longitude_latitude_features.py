@@ -82,7 +82,7 @@ def main():
 
     train['id'] = train_id
     train['price_doc'] = train_price_doc
-    test['id'] = test_id
+    test['id'] = test_id.values
     print 'train:', train.shape, ', test:', test.shape
     print("Save data...")
     data_utils.save_data(train, test, _)

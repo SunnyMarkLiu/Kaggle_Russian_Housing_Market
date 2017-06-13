@@ -12,6 +12,7 @@ import sys
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
 
+import numpy as np
 import pandas as pd
 # remove warnings
 import warnings
@@ -26,9 +27,10 @@ import datetime
 import data_utils
 
 
-def generate_timewindow_salecount(conbined_data, timewindow_days):
+def generate_timewindow_salecount(conbined_data):
     """按照地区统计时间窗内的销售量"""
-    print '按照地区统计时间窗内的销售量...'
+    timewindow_days = [30*6, 30*4, 30*2, 30, 20, 10]
+
     for timewindow in timewindow_days:
         print 'perform timewindow =', timewindow
         pre_timewindow_salecounts = []
@@ -48,17 +50,15 @@ def generate_timewindow_salecount(conbined_data, timewindow_days):
 
     return conbined_data
 
-
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_data()
-    predict_test_prices = data_utils.load_predict_test_prices()
     print 'train:', train.shape, ', test:', test.shape
 
     train_id = train['id']
-    train.drop(['id'], axis=1, inplace=True)
+    train_price_doc = train['price_doc']
+    train.drop(['id', 'price_doc'], axis=1, inplace=True)
     test_id = test['id']
-    test['price_doc'] = predict_test_prices['price_doc']
     test.drop(['id'], axis=1, inplace=True)
 
     # 合并训练集和测试集
@@ -66,16 +66,14 @@ def main():
     conbined_data.columns = test.columns.values
     conbined_data.index = range(conbined_data.shape[0])
 
-    timewindow_days = [30 * 6, 30 * 4, 30 * 2, 30, 20, 10]
-    conbined_data = generate_timewindow_salecount(conbined_data, timewindow_days)
+    conbined_data = generate_timewindow_salecount(conbined_data)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 
     train['id'] = train_id
+    train['price_doc'] = train_price_doc
     test['id'] = test_id
-    test.drop(['price_doc'], axis=1, inplace=True)
-
     print 'train:', train.shape, ', test:', test.shape
     print("Save data...")
     data_utils.save_data(train, test, _)

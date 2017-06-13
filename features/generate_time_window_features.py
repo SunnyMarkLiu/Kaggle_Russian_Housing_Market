@@ -48,27 +48,6 @@ def generate_timewindow_salecount(conbined_data, timewindow_days):
 
     return conbined_data
 
-def generate_timewindow_price(conbined_data, timewindow_days):
-    """按照地区统计时间窗内的价格"""
-    print '按照地区统计时间窗内的价格...'
-    for timewindow in timewindow_days:
-        print 'perform timewindow =', timewindow
-        pre_timewindow_saleprice_doc = []
-        for i in tqdm(range(conbined_data.shape[0])):
-            today_time = conbined_data.loc[i, 'timestamp']
-            indexs = (today_time - datetime.timedelta(days=timewindow) < conbined_data['timestamp']) & \
-                     (conbined_data['timestamp'] < today_time)
-            df = conbined_data[indexs]
-            df = df.groupby(['sub_area']).mean()['price_doc'].reset_index()
-            df.columns = ['sub_area', 'sale_count']
-
-            mean_price = df[df['sub_area'] == conbined_data.loc[i, 'sub_area']]['sale_count'].values
-            mean_price = 0 if len(mean_price) == 0 else mean_price[0]
-            pre_timewindow_saleprice_doc.append(mean_price)
-
-        conbined_data['this_sub_area_pre_' + str(timewindow) + '_mean_price'] = pre_timewindow_saleprice_doc
-
-    return conbined_data
 
 def main():
     print 'loading train and test datas...'
@@ -89,7 +68,6 @@ def main():
 
     timewindow_days = [30 * 6, 30 * 4, 30 * 2, 30, 20, 10]
     conbined_data = generate_timewindow_salecount(conbined_data, timewindow_days)
-    conbined_data = generate_timewindow_price(conbined_data, timewindow_days)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

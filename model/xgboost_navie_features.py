@@ -101,15 +101,12 @@ def main():
 
     num_round = 1000
     xgb_params['nthread'] = 24
-    # param['eval_metric'] = "auc"
-    plst = xgb_params.items()
-    plst += [('eval_metric', 'rmse')]
-    evallist = [(dval, 'eval')]
 
-    bst = xgb.train(plst, dtrain, num_round, evallist, early_stopping_rounds=100, verbose_eval=10)
-
-    num_boost_round = bst.best_iteration
+    cv_output = xgb.cv(xgb_params, dtrain, num_boost_round=num_round, early_stopping_rounds=20,
+                       verbose_eval=20, show_stdv=False)
+    num_boost_round = len(cv_output)
     print 'best_iteration: ', num_boost_round
+
     model = xgb.train(dict(xgb_params, silent=1), dtrain_all, num_boost_round=num_boost_round)
 
     print 'predict submit...'

@@ -22,8 +22,8 @@ os.system(cmd)
 cmd = 'python train_test_preprocess.py'
 os.system(cmd)
 
-cmd = 'python generate_neighbourhood_features.py'
-os.system(cmd)
+# cmd = 'python generate_neighbourhood_features.py'
+# os.system(cmd)
 
 cmd = 'python generate_longitude_latitude_features.py'
 os.system(cmd)
@@ -35,9 +35,6 @@ os.system(cmd)
 # os.system(cmd)
 
 # cmd = 'python generate_time_window_features.py'
-# os.system(cmd)
-
-# cmd = 'python subsample_traindata.py'
 # os.system(cmd)
 
 # cmd = 'python generate_subarea_features.py'

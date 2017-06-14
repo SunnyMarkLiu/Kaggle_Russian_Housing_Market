@@ -31,9 +31,6 @@ os.system(cmd)
 # cmd = 'python ratio_dispersed_features.py'
 # os.system(cmd)
 
-# cmd = 'python deal_multicollinearity.py'
-# os.system(cmd)
-
 # cmd = 'python generate_time_window_features.py'
 # os.system(cmd)
 

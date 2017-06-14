@@ -39,8 +39,8 @@ def perform_area_features(train, test):
 
 def perform_floor_features(train, test):
     """ 处理 floor 相关字段 """
-    # train['rel_floor'] = train['floor'] / np.maximum(train["max_floor"].astype("float"),1.0)
-    # test['rel_floor'] = test['floor'] / np.maximum(test["max_floor"].astype("float"),1.0)
+    train['rel_floor'] = train['floor'] / np.maximum(train["max_floor"].astype("float"),1.0)
+    test['rel_floor'] = test['floor'] / np.maximum(test["max_floor"].astype("float"),1.0)
     return train, test
 
 

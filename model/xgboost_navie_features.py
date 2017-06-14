@@ -21,6 +21,7 @@ import warnings
 
 warnings.filterwarnings('ignore')
 from sklearn import preprocessing
+from sklearn.metrics import mean_squared_error
 
 # my own module
 from features import data_utils
@@ -65,7 +66,7 @@ def main():
 
     # Create a validation set, with last 20% of data
     num_train = train.shape[0]
-    num_val = int(num_train * 0.2)
+    num_val = int(num_train * test_size)
 
     X_train_all = X_all[:num_train]
     X_train = X_all[:num_train - num_val]
@@ -104,6 +105,10 @@ def main():
     evallist = [(dval, 'eval')]
 
     bst = xgb.train(xgb_params, dtrain, num_round, evallist, early_stopping_rounds=40, verbose_eval=10)
+
+    train_rmse = mean_squared_error(ylog_train, bst.predict(dtrain))
+    val_rmse = mean_squared_error(ylog_val, bst.predict(dval))
+    print 'train_rmse =', np.sqrt(train_rmse), ', val_rmse =', np.sqrt(val_rmse)
 
     num_boost_round = bst.best_iteration
     print 'best_iteration: ', num_boost_round

@@ -52,7 +52,7 @@ def generate_distance_features(conbined_data, longitude_latitude):
     conbined_data['kremlin_distance'] = (conbined_data['latitude'].values - kremlin_latitude) ** 2 + \
                                         (conbined_data['longitude'].values - kremlin_longitude) ** 2
     conbined_data['kremlin_distance'] = np.sqrt(conbined_data['kremlin_distance'].values)
-
+    del conbined_data['kremlin_distance']
     # 保留 latitude 和 longitude 信息
     # del conbined_data['latitude']
     # del conbined_data['longitude']

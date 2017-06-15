@@ -40,6 +40,9 @@ os.system(cmd)
 cmd = 'python final_features_process.py'
 os.system(cmd)
 
+cmd = 'python generate_pca_components_features.py'
+os.system(cmd)
+
 # 对于 xgboost 保留所有特征比特征选择后的效果要好
 # cmd = 'python features_selection.py'
 # os.system(cmd)

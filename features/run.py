@@ -40,5 +40,8 @@ os.system(cmd)
 cmd = 'python generate_subarea_features.py'
 os.system(cmd)
 
+cmd = 'python final_features_process.py'
+os.system(cmd)
+
 cmd = 'python ../model/xgboost_navie_features.py'
 os.system(cmd)

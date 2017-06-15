@@ -32,6 +32,19 @@ import data_utils
 
 def feature_discretization(conbined_data):
     """连续特征离散化"""
+    num_columns = conbined_data.select_dtypes(exclude=['object']).columns.values
+    dis_num_columns = num_columns.tolist()
+    dis_num_columns.remove('timestamp')
+
+    for column in dis_num_columns:
+        # for boolean features, do not scatter and skewed
+        if len(set(conbined_data[column])) < 10:
+            dis_num_columns.remove(column)
+
+    for f in dis_num_columns:
+        mingap = (conbined_data[f].max() - conbined_data[f].min()) / 10.0
+        conbined_data[f + '_dis'] = np.round(conbined_data[f].values / np.maximum(mingap, 1.0))
+
     return conbined_data
 
 
@@ -43,7 +56,7 @@ def feature_distribute_scale(conbined_data):
     num_columns = conbined_data.select_dtypes(exclude=['object']).columns.values
     scater_skew_num_columns = num_columns.tolist()
     scater_skew_num_columns.remove('timestamp')
-    for column in num_columns:
+    for column in scater_skew_num_columns:
         # for boolean features, do not scatter and skewed
         if len(set(conbined_data[column])) < 10:
             scater_skew_num_columns.remove(column)

@@ -43,7 +43,8 @@ def generate_subarea_density(conbined_data):
 
     conbined_data['area_km'] = conbined_data['area_m'] / 1000000
     for feature in density_features:
-        conbined_data[feature + '_density'] = conbined_data[feature] / conbined_data['area_km']
+        if feature in conbined_data.columns.values:
+            conbined_data[feature + '_density'] = conbined_data[feature] / conbined_data['area_km']
 
     del conbined_data['area_km']
     return conbined_data

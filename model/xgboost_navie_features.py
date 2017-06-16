@@ -57,24 +57,22 @@ def main():
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
 
-    test_size = (1.0 * test.shape[0]) / (train.shape[0] + test.shape[0])
+    test_size = (1.0 * test.shape[0]) / train.shape[0]
     print "submit test size:", test_size
 
     # Convert to numpy values
     X_all = train.values
-    print(X_all.shape)
 
     # Create a validation set, with last 20% of data
-    num_train = train.shape[0]
-    num_val = int(num_train * test_size)
+    num_train = int(train.shape[0] / (1+test_size))
 
-    X_train_all = X_all[:num_train]
-    X_train = X_all[:num_train - num_val]
-    X_val = X_all[num_train - num_val:num_train]
-    ylog_train = ylog_train_all[:-num_val]
-    ylog_val = ylog_train_all[-num_val:]
-
+    X_train_all = X_all
+    X_train = X_all[:num_train]
+    X_val = X_all[num_train:]
+    ylog_train = ylog_train_all[:num_train]
+    ylog_val = ylog_train_all[num_train:]
     X_test = test
+    print "validate size:", 1.0*X_val.shape[0] / X_train.shape[0]
 
     df_columns = train.columns
 

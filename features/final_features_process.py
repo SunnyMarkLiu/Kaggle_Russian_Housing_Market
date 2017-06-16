@@ -38,7 +38,7 @@ def feature_discretization(conbined_data):
 
     for column in dis_num_columns:
         # for boolean features, do not scatter and skewed
-        if len(set(conbined_data[column])) < 10:
+        if len(set(conbined_data[column])) < 5:
             dis_num_columns.remove(column)
 
     for f in dis_num_columns:

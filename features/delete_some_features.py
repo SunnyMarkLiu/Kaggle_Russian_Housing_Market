@@ -44,6 +44,14 @@ def delete_some_features(conbined_data):
         if df in conbined_data.columns.values:
             del conbined_data[df]
 
+    # pre_features = ['work_male', 'work_female',
+    #                 'young_male', 'young_female',
+    #                 'male_f', 'female_f',
+    #                 ]
+    # for df in pre_features:
+    #     if df in conbined_data.columns.values:
+    #         del conbined_data[df]
+
     return conbined_data
 
 def main():

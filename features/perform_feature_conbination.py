@@ -10,7 +10,7 @@ import sys
 
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
-import numpy as np
+
 import pandas as pd
 # remove warnings
 import warnings
@@ -21,6 +21,15 @@ warnings.filterwarnings('ignore')
 import data_utils
 
 def perform_internal_characteristics(conbined_data):
+    """对于高度相关的特征进行组合，同时在 delete_some_features.py 中删除其中的一个"""
+
+    # # Population Internal Characteristics
+    # conbined_data['conbine_work_people'] = (0.17*conbined_data['work_all'] + 0.18*conbined_data['work_male'] +
+    #                                        0.17 * conbined_data['work_female']) / (0.17 + 0.18 + 0.17)
+    # conbined_data['conbine_young_people'] = (0.23*conbined_data['young_all'] + 0.23*conbined_data['young_male'] +
+    #                                        0.23 * conbined_data['young_female']) / (0.23 * 3)
+    # conbined_data['conbine_male_female'] = (0.16*conbined_data['male_f'] + 0.16*conbined_data['female_f']) / (0.16 * 2)
+
 
     return conbined_data
 

@@ -22,6 +22,10 @@ os.system(cmd)
 cmd = 'python subsample_traindata.py'
 os.system(cmd)
 
+# 计算基于价格的特征向量的相似度
+cmd = 'python perform_price2vec.py'
+os.system(cmd)
+
 cmd = 'python train_test_preprocess.py'
 os.system(cmd)
 
@@ -31,8 +35,8 @@ os.system(cmd)
 cmd = 'python generate_longitude_latitude_features.py'
 os.system(cmd)
 
-cmd = 'python generate_time_window_features.py'
-os.system(cmd)
+# cmd = 'python generate_time_window_features.py'
+# os.system(cmd)
 
 cmd = 'python generate_subarea_features.py'
 os.system(cmd)

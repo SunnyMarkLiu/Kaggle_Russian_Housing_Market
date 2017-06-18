@@ -26,4 +26,6 @@ class Configure(object):
     processed_test_path = '../data/processed_test_data.pkl'
     processed_macro_path = '../data/processed_macro_data.pkl'
 
+    time_window_salecount_features_path = '../data/time_window_{}_subarea_salecount_features.pkl'
+
     multicollinearity_features = '../data/multicollinearity_features.pkl'

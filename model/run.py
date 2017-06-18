@@ -12,3 +12,6 @@ sys.path.append(module_path)
 
 cmd = 'rm ../result/*.csv'
 os.system(cmd)
+
+cmd = 'python models_ensemble.py'
+os.system(cmd)

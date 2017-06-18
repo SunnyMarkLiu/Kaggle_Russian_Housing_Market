@@ -2,9 +2,8 @@
 # _*_ coding: utf-8 _*_
 
 """
-使用基本的特征构建基本的 xgboost 模型
 @author: MarkLiu
-@time  : 17-5-25 下午9:03
+@time  : 17-6-18 下午5:46
 """
 import os
 import sys
@@ -100,9 +99,11 @@ def main():
 
     num_round = 1000
     xgb_params['nthread'] = 24
-    evallist = [(dval, 'eval')]
+    evallist = [(dtrain, 'train'), (dval, 'eval')]
 
-    bst = xgb.train(xgb_params, dtrain, num_round, evallist, early_stopping_rounds=40, verbose_eval=10)
+    learning_rates_list = [0.05] * 300 + [0.001] * (num_round - 300)
+    bst = xgb.train(xgb_params, dtrain, num_round, evallist, early_stopping_rounds=40, verbose_eval=10,
+                    learning_rates=learning_rates_list)
 
     train_rmse = mean_squared_error(ylog_train, bst.predict(dtrain))
     val_rmse = mean_squared_error(ylog_val, bst.predict(dval))
@@ -116,7 +117,7 @@ def main():
     ylog_pred = model.predict(dtest)
     y_pred = np.exp(ylog_pred) - 1
     df_sub = pd.DataFrame({'id': submit_ids, 'price_doc': y_pred})
-    df_sub.to_csv('xgboost_model_4.csv', index=False)
+    df_sub.to_csv('xgboost_model_5.csv', index=False)
 
 
 if __name__ == '__main__':

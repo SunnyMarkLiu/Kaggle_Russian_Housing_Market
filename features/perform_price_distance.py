@@ -3,7 +3,7 @@
 
 """
 1、发现不同地区价格存在不同的重复率
-2、计算不同区间的价格的余弦相似度（特征的向量空间）
+2、计算不同区间的价格的相似度（特征的向量空间）
 
 @author: MarkLiu
 @time  : 17-6-17 下午3:35
@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 from tqdm import tqdm
+import cPickle
 # remove warnings
 import warnings
 
@@ -25,18 +26,18 @@ warnings.filterwarnings('ignore')
 
 # my own module
 import data_utils
+from conf.configure import Configure
 
 
-def perform_price_bins(train_price_doc, bins=50):
-    """价格分段，用于计算余弦相似度的目标"""
-    mingap = (max(train_price_doc) - min(train_price_doc)) / bins
-    price_bins = [min(train_price_doc) + i * mingap for i in range(bins + 1)]
+def perform_price_bins(train_price_doc, bins=10):
+    """价格分段，用于计算相似度的目标"""
+    mingap = 100 / bins
+    price_bins = [np.percentile(train_price_doc, (i + 1) * mingap) for i in range(bins)]
     return price_bins
 
 
-def calc_cos_distance_pricebins(conbined_data_df, train_price_doc):
+def calc_distance_pricebins(conbined_data_df, train_price_doc):
     """计算向量空间与各价格分段的余弦距离"""
-    global complete_count
     conbined_data = conbined_data_df.copy()
 
     str_columns = conbined_data_df.select_dtypes(include=['object']).columns.values.tolist()
@@ -54,7 +55,7 @@ def calc_cos_distance_pricebins(conbined_data_df, train_price_doc):
     conbined_data = pd.DataFrame(conbined_data, columns=train_columns)
     train = conbined_data.iloc[:train_price_doc.shape[0], :]
 
-    price_bins = perform_price_bins(train_price_doc, bins=20)
+    price_bins = perform_price_bins(train_price_doc, bins=40)
 
     base_train_pbs = []
     for i in range(len(price_bins) - 1):
@@ -62,8 +63,9 @@ def calc_cos_distance_pricebins(conbined_data_df, train_price_doc):
         right = price_bins[i + 1]
         train_pb = train.loc[((train_price_doc > left) & (train_price_doc <= right)), :]
         base_train_pbs.append(train_pb)
+        print 'bins', i, ', price bin', train_pb.shape
 
-    # 计算余弦相似度
+    print '============ 计算余弦相似度 ============'
     cos_distance_result = pd.DataFrame()
     cos_distance_result.index = range(cos_distance_result.shape[0])
     conbined_data.index = range(conbined_data.shape[0])
@@ -79,7 +81,6 @@ def calc_cos_distance_pricebins(conbined_data_df, train_price_doc):
             cos_distance_result.loc[i, 'prics_bin_' + str(j) + '_cos_distance'] = 1.0 * sum(cos_distances) / max(len(cos_distances), 1.0)
 
     return cos_distance_result
-
 
 def main():
     print 'loading train and test datas...'
@@ -97,7 +98,20 @@ def main():
     conbined_data.columns = test.columns.values
     conbined_data.index = range(conbined_data.shape[0])
 
-    conbined_data_cos_dis = calc_cos_distance_pricebins(conbined_data, train_price_doc)
+    if not os.path.exists(Configure.conbined_data_price_distance_path):
+        conbined_data_cos_dis = calc_distance_pricebins(conbined_data, train_price_doc)
+        with open(Configure.conbined_data_price_distance_path, "wb") as f:
+            cPickle.dump(conbined_data_cos_dis, f, -1)
+    else:
+        with open(Configure.conbined_data_price_distance_path, "rb") as f:
+            conbined_data_cos_dis = cPickle.load(f)
+
+
+    conbined_data['index'] = range(conbined_data.shape[0])
+    conbined_data_cos_dis['index'] = range(conbined_data_cos_dis.shape[0])
+
+    conbined_data = pd.merge(conbined_data, conbined_data_cos_dis, how='left', on='index')
+    del conbined_data['index']
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]
@@ -111,5 +125,5 @@ def main():
 
 
 if __name__ == '__main__':
-    print "============== perform cos_distance price bins =============="
+    print "============== perform feature distance on price bins =============="
     main()

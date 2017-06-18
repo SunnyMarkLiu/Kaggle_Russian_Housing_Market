@@ -23,40 +23,40 @@ cmd = 'python subsample_traindata.py'
 os.system(cmd)
 
 # 计算基于价格的特征向量的相似度
-cmd = 'python perform_price2vec.py'
+cmd = 'python perform_price_distance.py'
 os.system(cmd)
 
-cmd = 'python train_test_preprocess.py'
-os.system(cmd)
-
-cmd = 'python generate_neighbourhood_features.py'
-os.system(cmd)
-
-cmd = 'python generate_longitude_latitude_features.py'
-os.system(cmd)
-
-# cmd = 'python generate_time_window_features.py'
+# cmd = 'python train_test_preprocess.py'
 # os.system(cmd)
-
-cmd = 'python generate_subarea_features.py'
-os.system(cmd)
-
-cmd = 'python final_features_process.py'
-os.system(cmd)
-
-cmd = 'python perform_feature_conbination.py'
-os.system(cmd)
-
-# 添加 pca components 特征，线上爆炸
-# cmd = 'python generate_pca_components_features.py'
+#
+# cmd = 'python generate_neighbourhood_features.py'
 # os.system(cmd)
-
-# 对于 xgboost 保留所有特征比特征选择后的效果要好
-# cmd = 'python features_selection.py'
+#
+# cmd = 'python generate_longitude_latitude_features.py'
 # os.system(cmd)
-
-cmd = 'python delete_some_features.py'
-os.system(cmd)
-
-cmd = 'python ../model/xgboost_navie_features.py'
-os.system(cmd)
+#
+# # cmd = 'python generate_time_window_features.py'
+# # os.system(cmd)
+#
+# cmd = 'python generate_subarea_features.py'
+# os.system(cmd)
+#
+# cmd = 'python final_features_process.py'
+# os.system(cmd)
+#
+# cmd = 'python perform_feature_conbination.py'
+# os.system(cmd)
+#
+# # 添加 pca components 特征，线上爆炸
+# # cmd = 'python generate_pca_components_features.py'
+# # os.system(cmd)
+#
+# # 对于 xgboost 保留所有特征比特征选择后的效果要好
+# # cmd = 'python features_selection.py'
+# # os.system(cmd)
+#
+# cmd = 'python delete_some_features.py'
+# os.system(cmd)
+#
+# cmd = 'python ../model/xgboost_navie_features.py'
+# os.system(cmd)

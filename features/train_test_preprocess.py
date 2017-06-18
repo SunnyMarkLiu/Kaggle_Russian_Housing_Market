@@ -91,6 +91,11 @@ def perform_timestamp_features(conbined_data):
     return conbined_data
 
 
+def generate_subarea_uptown(conbined_data):
+    """根据 sub_area 和到 metro_km_avto 距离大致确定小区名称，可进行类习于 sub_area 的处理，如加入时间窗"""
+    conbined_data['building_uptown'] = conbined_data['sub_area'] + conbined_data['metro_km_avto'].astype(str)
+    return conbined_data
+
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_data()
@@ -117,6 +122,7 @@ def main():
     conbined_data.columns = test.columns.values
 
     conbined_data = perform_timestamp_features(conbined_data)
+    conbined_data = generate_subarea_uptown(conbined_data)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

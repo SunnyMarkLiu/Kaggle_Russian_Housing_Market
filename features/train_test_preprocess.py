@@ -91,6 +91,17 @@ def perform_timestamp_features(conbined_data):
     return conbined_data
 
 
+def generate_price_repeat_rate(train, test):
+    """计算sub area 的价格重复率"""
+    area_price_repeat_rate = {}
+    for area in set(train.sub_area):
+        set_len = len(set(train['price_doc'][train.sub_area == area]))
+        l = train['price_doc'][train.sub_area == area].shape[0]
+        area_price_repeat_rate[area] = 1.0 * (l - set_len) / l
+    train['sub_area_price_repeat_rate'] = train['sub_area'].map(area_price_repeat_rate)
+    test['sub_area_price_repeat_rate'] = test['sub_area'].map(area_price_repeat_rate)
+    return train, test
+
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_data()
@@ -105,6 +116,7 @@ def main():
     train, test = perform_build_year_features(train, test)
     train, test = perform_num_room_features(train, test)
     train, test = perform_product_type_features(train, test)
+    train, test = generate_price_repeat_rate(train, test)
 
     train_id = train['id']
     train_price_doc = train['price_doc']

@@ -27,5 +27,5 @@ class Configure(object):
     processed_macro_path = '../data/processed_macro_data.pkl'
 
     multicollinearity_features = '../data/multicollinearity_features.pkl'
-
+    time_window_salecount_features_path = '../data/time_window_salecount_features.pkl'
     conbined_data_price_distance_path = '../data/conbined_data_price_distance_path.pkl'

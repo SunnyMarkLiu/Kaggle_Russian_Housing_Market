@@ -106,3 +106,6 @@ y_pred = model.predict(dtest)
 
 df_sub = pd.DataFrame({'id': id_test, 'price_doc': y_pred})
 df_sub.to_csv('xgboost_model_2.csv', index=False)  # 0.31284
+
+# save model
+model.save_model('xgboost_model2.model')

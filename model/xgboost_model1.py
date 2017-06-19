@@ -54,3 +54,6 @@ model = xgb.train(xgb_params, dtrain, num_boost_round=num_boost_rounds)
 y_predict = model.predict(dtest)
 output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 output.to_csv('xgboost_model_1.csv', index=False)  # 0.31191
+
+# save model
+model.save_model('xgboost_model1.model')

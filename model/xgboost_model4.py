@@ -116,7 +116,10 @@ def main():
     ylog_pred = model.predict(dtest)
     y_pred = np.exp(ylog_pred) - 1
     df_sub = pd.DataFrame({'id': submit_ids, 'price_doc': y_pred})
-    df_sub.to_csv(Configure.submission_path, index=False)
+    df_sub.to_csv(Configure.submission_path, index=False) # 0.31499
+
+    # save model
+    model.save_model('xgboost_model4.model')
 
 
 if __name__ == '__main__':

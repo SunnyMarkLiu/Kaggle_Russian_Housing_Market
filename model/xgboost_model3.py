@@ -345,3 +345,5 @@ y_predict = model.predict(dtest)
 gunja_output = pd.DataFrame({'id': id_test, 'price_doc': y_predict})
 gunja_output.to_csv('xgboost_model_3.csv', index=False)  # 0.31686
 
+# save model
+model.save_model('xgboost_model3.model')

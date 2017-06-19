@@ -19,6 +19,10 @@ os.system(cmd)
 cmd = 'python subsample_traindata.py'
 os.system(cmd)
 
+# # 计算基于价格的特征向量的相似度
+# cmd = 'python perform_price_distance.py'
+# os.system(cmd)
+
 cmd = 'python train_test_preprocess.py'
 os.system(cmd)
 

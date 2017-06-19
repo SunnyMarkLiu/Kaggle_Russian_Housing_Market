@@ -13,5 +13,5 @@ sys.path.append(module_path)
 cmd = 'rm ../result/*.csv'
 os.system(cmd)
 
-cmd = 'python models_ensemble.py'
+cmd = 'python xgboost_model4.py'
 os.system(cmd)

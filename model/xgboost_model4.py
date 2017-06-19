@@ -15,7 +15,6 @@ sys.path.append(module_path)
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-
 # remove warnings
 import warnings
 
@@ -25,7 +24,6 @@ from sklearn.metrics import mean_squared_error
 
 # my own module
 from features import data_utils
-from conf.configure import Configure
 
 
 def main():
@@ -33,6 +31,7 @@ def main():
 
     train['price_doc'] = np.log1p(train['price_doc'])
     ylog_train_all = train['price_doc']
+    id_train = train['id']
     train.drop(['id', 'price_doc'], axis=1, inplace=True)
     submit_ids = test['id']
     test.drop(['id'], axis=1, inplace=True)
@@ -116,7 +115,7 @@ def main():
     ylog_pred = model.predict(dtest)
     y_pred = np.exp(ylog_pred) - 1
     df_sub = pd.DataFrame({'id': submit_ids, 'price_doc': y_pred})
-    df_sub.to_csv(Configure.submission_path, index=False) # 0.31499
+    df_sub.to_csv('xgboost_model_4.csv', index=False) # 0.31499
 
     # save model
     model.save_model('xgboost_model4.model')

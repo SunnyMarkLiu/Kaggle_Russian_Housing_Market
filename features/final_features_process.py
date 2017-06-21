@@ -38,37 +38,35 @@ def feature_discretization(conbined_data):
 
     for column in num_columns:
         set_len = len(set(conbined_data[column]))
+        if set_len <= 10:
+            continue
+
+        mingap = 0.
         if (set_len > 10) and (set_len <= 50):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 5.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 50) and (set_len <= 100):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 10.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 100) and (set_len <= 200):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 20.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 200) and (set_len <= 400):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 40.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 400) and (set_len <= 1000):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 100.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 1000) and (set_len <= 5000):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 200.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 5000) and (set_len <= 10000):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 500.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
         if (set_len > 10000) and (set_len <= 20000):
             mingap = (conbined_data[column].max() - conbined_data[column].min()) / 1000.0
-            conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
+
+        conbined_data[column + '_dis'] = np.round(conbined_data[column].values / np.maximum(mingap, 1.0))
 
     return conbined_data
 

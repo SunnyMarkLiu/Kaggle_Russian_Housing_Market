@@ -29,7 +29,10 @@ from features import data_utils
 def main():
     train, test, macro = data_utils.load_data()
 
-    train['price_doc'] = np.log1p(train['price_doc'])
+    mult = .969
+
+    train['price_doc'] = train["price_doc"] * mult + 10
+    # train['price_doc'] = np.log1p(train['price_doc'])
     ylog_train_all = train['price_doc']
     id_train = train['id']
     train.drop(['id', 'price_doc'], axis=1, inplace=True)
@@ -112,8 +115,8 @@ def main():
     model = xgb.train(dict(xgb_params, silent=1), dtrain_all, num_boost_round=num_boost_round)
 
     print 'predict submit...'
-    ylog_pred = model.predict(dtest)
-    y_pred = np.exp(ylog_pred) - 1
+    y_pred = model.predict(dtest)
+    # y_pred = np.exp(ylog_pred) - 1
     df_sub = pd.DataFrame({'id': submit_ids, 'price_doc': y_pred})
     df_sub.to_csv('xgboost_model_4.csv', index=False) # 0.31499
 

@@ -14,6 +14,7 @@ class Configure(object):
     original_train_path = '../data/train.csv'
     original_test_path = '../data/test.csv'
     original_macro_path = '../data/macro.csv'
+    original_BAD_ADDRESS_FIX_path = '../data/BAD_ADDRESS_FIX.xlsx'
 
     original_imputed_train_path = '../data/imputed_train.csv'
     original_imputed_test_path = '../data/imputed_test.csv'

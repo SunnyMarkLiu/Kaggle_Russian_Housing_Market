@@ -90,7 +90,7 @@ def main():
     conbined_data = pd.concat([train[test.columns.values], test])
     conbined_data.columns = test.columns.values
 
-    conbined_data = feature_distribute_scale(conbined_data)
+    # conbined_data = feature_distribute_scale(conbined_data)
     conbined_data = feature_discretization(conbined_data)
 
     train = conbined_data.iloc[:train.shape[0], :]

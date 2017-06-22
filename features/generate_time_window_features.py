@@ -29,6 +29,7 @@ from conf.configure import Configure
 
 def generate_timewindow_salecount(conbined_data_df, timewindow_days, target_col):
     conbined_data = conbined_data_df.copy()
+    conbined_data = conbined_data[['sub_area', 'timestamp', target_col]]
 
     timewindow_features = []
     for timewindow in timewindow_days:
@@ -82,6 +83,7 @@ def perform_time_window(conbined_data, timewindow_days):
 
 def generate_groupby_timewindow_salecount(conbined_data_df, timewindow_days, target_col):
     conbined_data = conbined_data_df.copy()
+    conbined_data = conbined_data[['sub_area', 'timestamp', target_col]]
 
     timewindow_features = []
     for timewindow in timewindow_days:
@@ -110,11 +112,9 @@ def generate_groupby_timewindow_salecount(conbined_data_df, timewindow_days, tar
 
 def perform_groupby_time_window(conbined_data, timewindow_days):
     """
-    按照 sub_area(2427990.14623) 与
-    incineration_raion(2454733.93437), 
-    oil_chemistry_raion(2454968.17914) 进行groupby统计
+    按照 sub_area 与 其他特征 进行 groupby 统计
     """
-    target_cols = ['product_type', 'incineration_raion', 'oil_chemistry_raion']
+    target_cols = ['']
     for target_col in target_cols:
         if target_col not in conbined_data.columns:
             continue

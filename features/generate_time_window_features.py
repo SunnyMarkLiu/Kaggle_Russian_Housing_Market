@@ -45,23 +45,24 @@ def generate_timewindow_salecount(conbined_data_df, timewindow_days, target_col)
             sale_count = df[df[target_col] == conbined_data.loc[i, target_col]]['sale_count'].values
             sale_count = 0 if len(sale_count) == 0 else sale_count[0]
             pre_timewindow_salecounts.append(sale_count)
-        feature = 'this_'+target_col+'pre_' + str(timewindow) + '_salecount'
+        feature = 'this_' + target_col + 'pre_' + str(timewindow) + '_salecount'
         conbined_data[feature] = pre_timewindow_salecounts
         timewindow_features.append(feature)
 
     timewindow_salecount_result = conbined_data[timewindow_features]
     return timewindow_salecount_result
 
-def perform_time_window(conbined_data):
-    """应用时间窗"""
-    # 时间窗大小
-    timewindow_days = [30*6, 30*4, 30*2, 30, 20, 10]
 
+def perform_time_window(conbined_data, timewindow_days):
+    """应用时间窗"""
     # target_cols = ['sub_area', 'building_uptown']
     target_cols = ['sub_area']
     for target_col in target_cols:
-        print '根据 '+ target_col +' 生成时间窗特征......'
-        cache_file = Configure.time_window_salecount_features_path.format(target_col)
+        if target_col not in conbined_data.columns:
+            continue
+
+        print '根据 ' + target_col + ' 生成时间窗特征......'
+        cache_file = Configure.single_time_window_salecount_features_path.format(target_col)
         if not os.path.exists(cache_file):
             timewindow_salecount_result = generate_timewindow_salecount(conbined_data, timewindow_days, target_col)
 
@@ -77,6 +78,64 @@ def perform_time_window(conbined_data):
         del conbined_data['index']
 
     return conbined_data
+
+
+def generate_groupby_timewindow_salecount(conbined_data_df, timewindow_days, target_col):
+    conbined_data = conbined_data_df.copy()
+
+    timewindow_features = []
+    for timewindow in timewindow_days:
+        print 'perform timewindow =', timewindow
+        pre_timewindow_salecounts = []
+        for i in tqdm(range(conbined_data.shape[0])):
+            today_time = conbined_data.loc[i, 'timestamp']
+            indexs = (today_time - datetime.timedelta(days=timewindow) < conbined_data['timestamp']) & \
+                     (conbined_data['timestamp'] < today_time)
+            # 获取时间窗内的数据
+            df = conbined_data[indexs]
+            df = df.groupby(['sub_area', target_col]).count()['timestamp'].reset_index()
+            df.columns = ['sub_area', target_col, 'sale_count']
+
+            sale_count = df[(df['sub_area'] == conbined_data.loc[i, 'sub_area']) and
+                            df[target_col] == conbined_data.loc[i, target_col]]['sale_count'].values
+            sale_count = 0 if len(sale_count) == 0 else sale_count[0]
+            pre_timewindow_salecounts.append(sale_count)
+        feature = 'subarea_' + target_col + 'pre_' + str(timewindow) + '_salecount'
+        conbined_data[feature] = pre_timewindow_salecounts
+        timewindow_features.append(feature)
+
+    timewindow_salecount_result = conbined_data[timewindow_features]
+    return timewindow_salecount_result
+
+
+def perform_groupby_time_window(conbined_data, timewindow_days):
+    """
+    按照 sub_area(2427990.14623) 与
+    incineration_raion(2454733.93437), 
+    oil_chemistry_raion(2454968.17914) 进行groupby统计
+    """
+    target_cols = ['product_type', 'incineration_raion', 'oil_chemistry_raion']
+    for target_col in target_cols:
+        if target_col not in conbined_data.columns:
+            continue
+        print '根据 ' + target_col + ' groupby 生成时间窗特征......'
+        cache_file = Configure.groupby_time_window_salecount_features_path.format(target_col)
+        if not os.path.exists(cache_file):
+            timewindow_salecount_result = generate_timewindow_salecount(conbined_data, timewindow_days, target_col)
+
+            with open(cache_file, "wb") as f:
+                cPickle.dump(timewindow_salecount_result, f, -1)
+        else:
+            with open(cache_file, "rb") as f:
+                timewindow_salecount_result = cPickle.load(f)
+
+        conbined_data['index'] = range(conbined_data.shape[0])
+        timewindow_salecount_result['index'] = range(timewindow_salecount_result.shape[0])
+        conbined_data = pd.merge(conbined_data, timewindow_salecount_result, how='left', on='index')
+        del conbined_data['index']
+
+    return conbined_data
+
 
 def main():
     print 'loading train and test datas...'
@@ -94,7 +153,10 @@ def main():
     conbined_data.columns = test.columns.values
     conbined_data.index = range(conbined_data.shape[0])
 
-    conbined_data = perform_time_window(conbined_data)
+    # 时间窗大小
+    timewindow_days = [30 * 6, 30 * 4, 30 * 2, 30, 20, 10]
+    conbined_data = perform_time_window(conbined_data, timewindow_days)
+    conbined_data = perform_groupby_time_window(conbined_data, timewindow_days)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

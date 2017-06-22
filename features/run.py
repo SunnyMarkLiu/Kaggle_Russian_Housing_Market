@@ -51,4 +51,7 @@ os.system(cmd)
 cmd = 'python delete_some_features.py'
 os.system(cmd)
 
+cmd = 'python final_generate_time_window_features.py'
+os.system(cmd)
+
 print 'feature engineering done!'

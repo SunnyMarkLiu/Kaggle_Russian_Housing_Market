@@ -33,6 +33,15 @@ def perform_internal_characteristics(conbined_data):
 
     return conbined_data
 
+def perform_feature_conbination(conbined_data):
+    """ 高 feature importance 的特征进行组合"""
+
+
+
+
+
+    return conbined_data
+
 def main():
     print 'loading train and test datas...'
     train, test, _ = data_utils.load_data()
@@ -49,6 +58,7 @@ def main():
     conbined_data.columns = test.columns.values
 
     conbined_data = perform_internal_characteristics(conbined_data)
+    conbined_data = perform_feature_conbination(conbined_data)
 
     train = conbined_data.iloc[:train.shape[0], :]
     test = conbined_data.iloc[train.shape[0]:, :]

@@ -78,11 +78,7 @@ def perform_time_window(conbined_data, timewindow_days):
             continue
         print '根据 ' + target_col + ' 生成时间窗特征......'
         timewindow_salecount_result = generate_timewindow_salecount(conbined_data, timewindow_days, target_col)
-
-        conbined_data['index'] = range(conbined_data.shape[0])
-        timewindow_salecount_result['index'] = range(timewindow_salecount_result.shape[0])
-        conbined_data = pd.merge(conbined_data, timewindow_salecount_result, how='left', on='index')
-        del conbined_data['index']
+        conbined_data = pd.merge(conbined_data, timewindow_salecount_result, how='left', on='id')
 
     return conbined_data
 
@@ -133,11 +129,7 @@ def perform_groupby_time_window(conbined_data, timewindow_days):
             continue
         print '根据 ' + target_col + ' groupby 生成时间窗特征......'
         timewindow_salecount_result = generate_groupby_timewindow_salecount(conbined_data, timewindow_days, target_col)
-
-        conbined_data['index'] = range(conbined_data.shape[0])
-        timewindow_salecount_result['index'] = range(timewindow_salecount_result.shape[0])
-        conbined_data = pd.merge(conbined_data, timewindow_salecount_result, how='left', on='index')
-        del conbined_data['index']
+        conbined_data = pd.merge(conbined_data, timewindow_salecount_result, how='left', on='id')
 
     return conbined_data
 

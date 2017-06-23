@@ -148,8 +148,7 @@ def main():
     conbined_data.index = range(conbined_data.shape[0])
 
     # 时间窗大小
-    timewindow_days = [30 * 12, 30 * 11, 30 * 10, 30 * 9, 30 * 8, 30 * 7, 30 * 6, 30 * 5, 30 * 4, 30 * 3, 30 * 2, 30,
-                       20, 10]
+    timewindow_days = [30 * 6, 30 * 4, 30 * 2, 30, 20, 10]
     conbined_data = perform_time_window(conbined_data, timewindow_days)
     conbined_data = perform_groupby_time_window(conbined_data, timewindow_days)
 

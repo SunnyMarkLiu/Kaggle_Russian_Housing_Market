@@ -47,11 +47,12 @@ def delete_some_features(train, test):
             del train[df]
             del test[df]
 
-    # delete_features = ['ID_railroad_station_walk_dis', 'ID_railroad_station_avto_dis', 'ID_big_road1_dis',
-    #                    'ID_big_road2_dis', 'ID_railroad_terminal_dis', 'ID_bus_terminal']
+    # delete_features = ['school_education_centers_raion_ratio_dis', 'preschool_education_centers_raion_ratio_dis',
+    #                    'sport_objects_raion_ratio_dis', 'additional_education_raion_ratio_dis']
     # for df in delete_features:
-    #     if df in conbined_data.columns.values:
-    #         del conbined_data[df]
+    #     if df in train.columns.values:
+    #         del train[df]
+    #         del test[df]
 
     return train, test
 

@@ -60,8 +60,8 @@ class TwoLevelModelStacking(object):
             x_train = self.train
             x_test = self.test
         else:
-            x_train = np.array([])
-            x_test = np.array([])
+            x_train = np.empty((self.ntrain, self.train.shape[1]))
+            x_test = np.empty((self.ntest, self.test.shape[1]))
 
         # run level-1 out-of-folds
         for model in self.models:

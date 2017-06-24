@@ -16,7 +16,10 @@ import pandas as pd
 import warnings
 
 warnings.filterwarnings('ignore')
+import numpy as np
+
 from sklearn import preprocessing
+from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge, Lasso
@@ -43,11 +46,6 @@ test.drop(['id'], axis=1, inplace=True)
 
 # 合并训练集和测试集
 conbined_data = pd.concat([train[test.columns.values], test])
-# macro_cols = ["balance_trade", "balance_trade_growth", "eurrub", "average_provision_of_build_contract",
-#               "micex_rgbi_tr", "micex_cbi_tr", "deposits_rate", "mortgage_value", "mortgage_rate",
-#               "income_per_cap", "rent_price_4+room_bus", "museum_visitis_per_100_cap", "apartment_build", "timestamp"]
-# conbined_data = pd.merge_ordered(conbined_data, macro[macro_cols], on='timestamp', how='left')
-
 conbined_data.drop(['timestamp'], axis=1, inplace=True)
 print "conbined_data:", conbined_data.shape
 
@@ -58,17 +56,20 @@ for c in conbined_data.columns:
         lbl.fit(list(conbined_data[c].values))
         conbined_data[c] = lbl.transform(list(conbined_data[c].values))
 
-train = conbined_data.iloc[:train.shape[0], :]
-test = conbined_data.iloc[train.shape[0]:, :]
+del conbined_data['school_education_centers_raion_ratio_dis']
+del conbined_data['preschool_education_centers_raion_ratio_dis']
+del conbined_data['sport_objects_raion_ratio_dis']
+del conbined_data['additional_education_raion_ratio_dis']
+del conbined_data['0_6_all_vs_preschool_quota_dis']
 
-train.index = range(train.shape[0])
-test.index = range(test.shape[0])
+scaler = StandardScaler()
+conbined_data = scaler.fit_transform(conbined_data)
+
+train = conbined_data[:train.shape[0], :]
+test = conbined_data[train.shape[0]:, :]
 
 test_size = (1.0 * test.shape[0]) / train.shape[0]
 print "submit test size:", test_size
-
-train = train.values
-test = test.values
 
 et_params = {
     'n_jobs': 16,
@@ -107,12 +108,12 @@ ls_params = {
 SEED = 0
 
 xg = XgbWrapper(seed=SEED, params=xgb_params)
-# et = SklearnWrapper(clf=ExtraTreesRegressor, seed=SEED, params=et_params)
-# rf = SklearnWrapper(clf=RandomForestRegressor, seed=SEED, params=rf_params)
-# rd = SklearnWrapper(clf=Ridge, seed=SEED, params=rd_params)
-# ls = SklearnWrapper(clf=Lasso, seed=SEED, params=ls_params)
+et = SklearnWrapper(clf=ExtraTreesRegressor, seed=SEED, params=et_params)
+rf = SklearnWrapper(clf=RandomForestRegressor, seed=SEED, params=rf_params)
+rd = SklearnWrapper(clf=Ridge, seed=SEED, params=rd_params)
+ls = SklearnWrapper(clf=Lasso, seed=SEED, params=ls_params)
 
-level_1_models = [xg]
+level_1_models = [xg, et, rf, rd, ls]
 stacking_model = XgbWrapper(seed=SEED, params=xgb_params)
 
 model_stack = TwoLevelModelStacking(train, y_train, test, level_1_models, stacking_model=stacking_model)

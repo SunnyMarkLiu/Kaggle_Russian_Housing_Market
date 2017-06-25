@@ -33,3 +33,5 @@ class Configure(object):
     multicollinearity_features = '../data/multicollinearity_features.pkl'
 
     conbined_data_price_distance_path = '../data/conbined_data_price_distance_path.pkl'
+    train_cv_result_for_model_stacking = '../model/cv_results/{}_train__cv_result_for_model_stacking_{}.csv'
+    test_cv_result_for_model_stacking = '../model/cv_results/{}_test__cv_result_for_model_stacking_{}.csv'

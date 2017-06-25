@@ -2,27 +2,29 @@
 # _*_ coding: utf-8 _*_
 
 """
-xgboost best model run out of folds
+Ridge best model run out of folds
+
 @author: MarkLiu
-@time  : 17-6-25 上午10:25
+@time  : 17-6-25 下午3:07
 """
 import os
 import sys
 
 module_path = os.path.abspath(os.path.join('..'))
 sys.path.append(module_path)
-
 import numpy as np
-import pandas as pd
-import xgboost as xgb
-# remove warnings
+import pandas as pd  # remove warnings
 import warnings
-import time
 
 warnings.filterwarnings('ignore')
+
 from sklearn import preprocessing
-from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Lasso
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold
+from sklearn.metrics import mean_squared_error
+import time
 # my own module
 from features import data_utils
 from conf.configure import Configure
@@ -30,10 +32,12 @@ from conf.configure import Configure
 
 def main():
     train, test, macro = data_utils.load_data()
-
+    train.fillna(0, inplace=True)
+    test.fillna(0)
     mult = .969
 
     train['price_doc'] = train["price_doc"] * mult + 10
+    # train['price_doc'] = np.log1p(train['price_doc'])
     y_train = train['price_doc']
     id_train = train['id']
     train.drop(['id', 'price_doc'], axis=1, inplace=True)
@@ -52,15 +56,20 @@ def main():
             lbl.fit(list(conbined_data[c].values))
             conbined_data[c] = lbl.transform(list(conbined_data[c].values))
 
-    train = conbined_data.iloc[:train.shape[0], :]
-    test = conbined_data.iloc[train.shape[0]:, :]
+    del conbined_data['school_education_centers_raion_ratio_dis']
+    del conbined_data['preschool_education_centers_raion_ratio_dis']
+    del conbined_data['sport_objects_raion_ratio_dis']
+    del conbined_data['additional_education_raion_ratio_dis']
+    del conbined_data['0_6_all_vs_preschool_quota_dis']
+
+    scaler = StandardScaler()
+    conbined_data = scaler.fit_transform(conbined_data)
+
+    train = conbined_data[:train.shape[0], :]
+    test = conbined_data[train.shape[0]:, :]
 
     test_size = (1.0 * test.shape[0]) / train.shape[0]
     print "submit test size:", test_size
-
-    # Convert to numpy values
-    train = train.values
-    test = test.values
 
     ntrain = train.shape[0]
     ntest = test.shape[0]
@@ -73,51 +82,43 @@ def main():
     oof_test = np.zeros((ntest,))
     oof_test_skf = np.empty((n_folds, ntest))
 
-    xgb_params = {
-        'eta': 0.05,
-        'max_depth': 5,
-        'subsample': 0.7,
-        'colsample_bytree': 0.7,
-        'objective': 'reg:linear',
-        'eval_metric': 'rmse',
-        'silent': 1,
-        'nthread': 24
-    }
-    num_round = 1000
-
-    dtest = xgb.DMatrix(test)
-
     for i, (train_index, test_index) in enumerate(kfold.split(train)):
         print 'fold-{}: train: {}, test: {}'.format(i, train_index, test_index)
         x_tr = train[train_index]
         y_tr = y_train[train_index]
         x_te = train[test_index]
 
-        dtrain = xgb.DMatrix(x_tr, y_tr)
-        dx_te = xgb.DMatrix(x_te)
-        cv_output = xgb.cv(dict(xgb_params, silent=1), dtrain, num_boost_round=num_round, early_stopping_rounds=40)
-        num_boost_round = len(cv_output)
-        print 'best_iteration: ', num_boost_round
-        model = xgb.train(dict(xgb_params, silent=1), dtrain, num_boost_round=num_boost_round)
-        train_rmse = mean_squared_error(y_tr, model.predict(dtrain))
+        alphas = np.array([1,0.1,0.01,0.001])
+        # create and fit a ridge regression model, testing each alpha
+        model = Lasso(normalize=True, fit_intercept=True) #We have chosen to just normalize the data by default, you could GridsearchCV this is you wanted
+        grid = GridSearchCV(estimator=model, param_grid=dict(alpha=alphas))
+        grid.fit(x_tr, y_tr)
+
+        # summarize the results of the grid search
+        print 'best_score', grid.best_score_
+        print 'alphas:', grid.best_estimator_.alpha
+
+        model = Lasso(normalize=True, alpha=grid.best_estimator_.alpha, fit_intercept=True)  # paramters tuned using GridSearchCV
+        model.fit(x_tr, y_tr)
+
+        train_rmse = mean_squared_error(y_tr, model.predict(x_tr))
         print 'train_rmse =', np.sqrt(train_rmse)
 
-        oof_train[test_index] = model.predict(dx_te)
-        oof_test_skf[i, :] = model.predict(dtest)
+        oof_train[test_index] = model.predict(x_te)
+        oof_test_skf[i, :] = model.predict(test)
 
     oof_test[:] = oof_test_skf.mean(axis=0)
 
     # 保存 oof 结果
     train_predict = pd.DataFrame({'id': id_train,
-                                  'xgboost_oof_predict': oof_train})
+                                  'lasso_oof_predict': oof_train})
     test_predict = pd.DataFrame({'id': id_test,
-                                 'xgboost_oof_predict': oof_test})
+                                 'lasso_oof_predict': oof_test})
 
-    train_predict.to_csv(Configure.train_cv_result_for_model_stacking.format('xgboost', time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time()))),
+    train_predict.to_csv(Configure.train_cv_result_for_model_stacking.format('lasso', time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time()))),
                          index=False)
-    test_predict.to_csv(Configure.test_cv_result_for_model_stacking.format('xgboost', time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time()))),
+    test_predict.to_csv(Configure.test_cv_result_for_model_stacking.format('lasso', time.strftime('%Y-%m-%d_%H:%M:%S', time.localtime(time.time()))),
                          index=False)
-
 
 if __name__ == '__main__':
     main()

@@ -92,19 +92,19 @@ def main():
         y_tr = y_train[train_index]
         x_te = train[test_index]
 
-        n_estimators = [100, 500, 1000, 1500, 2000]
-        max_depth = [5, 6, 7, 8]
+        n_estimators = [1000, 1500]
+        # max_depth = [5, 6, 7, 8]
         # create and fit a ridge regression model, testing each alpha
-        model = ExtraTreesRegressor(n_jobs=20) #We have chosen to just normalize the data by default, you could GridsearchCV this is you wanted
-        grid = GridSearchCV(estimator=model, param_grid=dict(n_estimators=n_estimators, max_depth=max_depth))
+        model = ExtraTreesRegressor(max_depth=8, n_jobs=12) #We have chosen to just normalize the data by default, you could GridsearchCV this is you wanted
+        grid = GridSearchCV(estimator=model, param_grid=dict(n_estimators=n_estimators))
         grid.fit(x_tr, y_tr)
         # summarize the results of the grid search
         print 'best_score', grid.best_score_
         print 'n_estimators:', grid.best_estimator_.n_estimators
-        print 'max_depth:', grid.best_estimator_.max_depth
+        # print 'max_depth:', grid.best_estimator_.max_depth
 
         model = ExtraTreesRegressor(n_estimators=grid.best_estimator_.n_estimators,
-                                      max_depth=grid.best_estimator_.max_depth,
+                                      max_depth=8,
                                       n_jobs=20)  # paramters tuned using GridSearchCV
         model.fit(x_tr, y_tr)
 

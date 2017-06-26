@@ -88,17 +88,18 @@ def main():
         y_tr = y_train[train_index]
         x_te = train[test_index]
 
-        alphas = np.array([1,0.1,0.01,0.001])
-        # create and fit a ridge regression model, testing each alpha
-        model = Lasso(normalize=True, fit_intercept=True) #We have chosen to just normalize the data by default, you could GridsearchCV this is you wanted
-        grid = GridSearchCV(estimator=model, param_grid=dict(alpha=alphas))
-        grid.fit(x_tr, y_tr)
-
-        # summarize the results of the grid search
-        print 'best_score', grid.best_score_
-        print 'alphas:', grid.best_estimator_.alpha
-
-        model = Lasso(normalize=True, alpha=grid.best_estimator_.alpha, fit_intercept=True)  # paramters tuned using GridSearchCV
+        # alphas = np.array([1,0.1,0.01,0.001])
+        # # create and fit a ridge regression model, testing each alpha
+        # model = Lasso(normalize=True, fit_intercept=True) #We have chosen to just normalize the data by default, you could GridsearchCV this is you wanted
+        # grid = GridSearchCV(estimator=model, param_grid=dict(alpha=alphas))
+        # grid.fit(x_tr, y_tr)
+        #
+        # # summarize the results of the grid search
+        # print 'best_score', grid.best_score_
+        # print 'alphas:', grid.best_estimator_.alpha
+        #
+        # model = Lasso(normalize=True, alpha=grid.best_estimator_.alpha, fit_intercept=True)  # paramters tuned using GridSearchCV
+        model = Lasso(normalize=True, alpha=1.0, fit_intercept=True)
         model.fit(x_tr, y_tr)
 
         train_rmse = mean_squared_error(y_tr, model.predict(x_tr))

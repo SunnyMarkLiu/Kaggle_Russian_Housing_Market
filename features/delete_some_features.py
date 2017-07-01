@@ -53,12 +53,48 @@ def delete_some_features(train, test):
             del train[df]
             del test[df]
 
-    # delete_features = ['school_education_centers_raion_ratio_dis', 'preschool_education_centers_raion_ratio_dis',
-    #                    'sport_objects_raion_ratio_dis', 'additional_education_raion_ratio_dis']
-    # for df in delete_features:
-    #     if df in train.columns.values:
-    #         del train[df]
-    #         del test[df]
+    delete_features = [
+            "young_male", "school_education_centers_top_20_raion", "0_17_female", "railroad_1line", "7_14_female",
+        "0_17_all", "children_school", "ecology", "16_29_male", "mosque_count_3000", "female_f", "church_count_1000",
+        "railroad_terminal_raion", "mosque_count_5000", "big_road1_1line", "mosque_count_1000", "7_14_male",
+        "0_6_female", "oil_chemistry_raion", "young_all", "0_17_male", "ID_bus_terminal", "university_top_20_raion",
+        "mosque_count_500", "ID_big_road1", "ID_railroad_terminal", "ID_railroad_station_walk", "ID_big_road2",
+        "ID_metro", "ID_railroad_station_avto", "0_13_all", "mosque_count_2000", "work_male", "16_29_all",
+        "young_female", "work_female", "0_13_female", "ekder_female", "7_14_all", "big_church_count_500",
+        "leisure_count_500", "cafe_sum_1500_max_price_avg", "leisure_count_2000", "office_count_500", "male_f",
+        "nuclear_reactor_raion", "0_6_male", "church_count_500", "build_count_before_1920", "thermal_power_plant_raion",
+        "cafe_count_2000_na_price", "cafe_count_500_price_high", "market_count_2000", "museum_visitis_per_100_cap",
+        "trc_count_500", "market_count_1000", "work_all", "additional_education_raion", "build_count_slag",
+        "leisure_count_1000", "0_13_male", "office_raion", "raion_build_count_with_builddate_info", "market_count_3000",
+        "ekder_all", "trc_count_1000", "build_count_1946-1970", "office_count_1500", "cafe_count_1500_na_price",
+        "big_church_count_5000", "big_church_count_1000", "build_count_foam", "church_count_1500", "church_count_3000",
+        "leisure_count_1500", "16_29_female", "build_count_after_1995", "cafe_avg_price_1500", "office_sqm_1000",
+        "cafe_avg_price_5000", "cafe_avg_price_2000", "big_church_count_1500", "full_all",
+        "cafe_sum_5000_min_price_avg", "office_sqm_2000", "church_count_5000", "0_6_all", "detention_facility_raion",
+        "cafe_avg_price_3000""young_male", "school_education_centers_top_20_raion", "0_17_female", "railroad_1line",
+        "7_14_female", "0_17_all", "children_school", "ecology", "16_29_male", "mosque_count_3000", "female_f",
+        "church_count_1000", "railroad_terminal_raion", "mosque_count_5000", "big_road1_1line", "mosque_count_1000",
+        "7_14_male", "0_6_female", "oil_chemistry_raion", "young_all", "0_17_male", "ID_bus_terminal",
+        "university_top_20_raion", "mosque_count_500", "ID_big_road1", "ID_railroad_terminal",
+        "ID_railroad_station_walk", "ID_big_road2", "ID_metro", "ID_railroad_station_avto", "0_13_all",
+        "mosque_count_2000", "work_male", "16_29_all", "young_female", "work_female", "0_13_female", "ekder_female",
+        "7_14_all", "big_church_count_500", "leisure_count_500", "cafe_sum_1500_max_price_avg", "leisure_count_2000",
+        "office_count_500", "male_f", "nuclear_reactor_raion", "0_6_male", "church_count_500",
+        "build_count_before_1920", "thermal_power_plant_raion", "cafe_count_2000_na_price", "cafe_count_500_price_high",
+        "market_count_2000", "museum_visitis_per_100_cap", "trc_count_500", "market_count_1000", "work_all",
+        "additional_education_raion", "build_count_slag", "leisure_count_1000", "0_13_male", "office_raion",
+        "raion_build_count_with_builddate_info", "market_count_3000", "ekder_all", "trc_count_1000",
+        "build_count_1946-1970", "office_count_1500", "cafe_count_1500_na_price", "big_church_count_5000",
+        "big_church_count_1000", "build_count_foam", "church_count_1500", "church_count_3000", "leisure_count_1500",
+        "16_29_female", "build_count_after_1995", "cafe_avg_price_1500", "office_sqm_1000", "cafe_avg_price_5000",
+        "cafe_avg_price_2000", "big_church_count_1500", "full_all", "cafe_sum_5000_min_price_avg", "office_sqm_2000",
+        "church_count_5000", "0_6_all", "detention_facility_raion", "cafe_avg_price_3000"
+        ]
+
+    for df in delete_features:
+        if df in train.columns.values:
+            del train[df]
+            del test[df]
 
     return train, test
 

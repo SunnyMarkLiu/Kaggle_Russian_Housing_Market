@@ -7,14 +7,18 @@ Kaggle Competition: [Sberbank Russian Housing Market](https://www.kaggle.com/c/s
 - Model stacking.
 
 ## Result
-![result](https://github.com/SunnyMarkLiu/Kaggle_Russian_Housing_Market/blob/master/result.png)
+Public Leaderboard
+![result](https://github.com/SunnyMarkLiu/Kaggle_Russian_Housing_Market/blob/master/public_lb.png)
+
+Private Leaderboard
+![result](https://github.com/SunnyMarkLiu/Kaggle_Russian_Housing_Market/blob/master/private_lb.png.png)
 
 - Public score: 0.30935
 - Private score: 0.31474
-- Public Leaderboard: 49/3462
-- Private Leaderboard: 77/3462
+- Public Leaderboard: 31/3462
+- Private Leaderboard: 56/3462
 
-The final result is 77/3462 (top3%).
+The final result is 56/3462 (top2%).
 
 ## License
 This project is licensed under the terms of the MIT license.

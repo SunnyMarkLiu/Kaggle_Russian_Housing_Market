@@ -15,10 +15,10 @@ Private Leaderboard
 
 - Public score: 0.30935
 - Private score: 0.31474
-- Public Leaderboard: 31/3462
-- Private Leaderboard: 56/3462
+- Public Leaderboard: 31/3264
+- Private Leaderboard: 56/3264
 
-The final result is 56/3462 (top2%).
+The final result is 56/3264 (top2%).
 
 ## License
 This project is licensed under the terms of the MIT license.

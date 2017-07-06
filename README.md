@@ -11,7 +11,7 @@ Public Leaderboard
 ![result](https://github.com/SunnyMarkLiu/Kaggle_Russian_Housing_Market/blob/master/public_lb.png)
 
 Private Leaderboard
-![result](https://github.com/SunnyMarkLiu/Kaggle_Russian_Housing_Market/blob/master/private_lb.png.png)
+![result](https://github.com/SunnyMarkLiu/Kaggle_Russian_Housing_Market/blob/master/private_lb.png)
 
 - Public score: 0.30935
 - Private score: 0.31474
